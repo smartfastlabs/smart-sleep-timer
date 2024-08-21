@@ -162,4 +162,8 @@ class SleepTimer: ObservableObject {
             to: Date()
         )!
     }
+    
+    func snooze(minutes: Int) {
+        setSleepTime(minutes: minutesUntilSleep! + minutes)
+    }
 }
