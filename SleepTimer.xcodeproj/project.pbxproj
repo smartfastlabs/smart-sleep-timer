@@ -7,16 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BFC8DBF02C762E970050B3A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBEF2C762E970050B3A5 /* ContentView.swift */; };
+		BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */; };
 		BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */; };
-		BFFBD88B2C75E53F00D4F3AF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFBD88A2C75E53F00D4F3AF /* ContentView.swift */; };
 		BFFBD88D2C75E54000D4F3AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */; };
 		BFFBD8902C75E54000D4F3AF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88F2C75E54000D4F3AF /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BFC8DBEF2C762E970050B3A5 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = ../../../.Trash/ContentView.swift; sourceTree = "<group>"; };
+		BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
 		BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerApp.swift; sourceTree = "<group>"; };
-		BFFBD88A2C75E53F00D4F3AF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BFFBD88F2C75E54000D4F3AF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SleepTimer.entitlements; sourceTree = "<group>"; };
@@ -53,7 +55,8 @@
 			isa = PBXGroup;
 			children = (
 				BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */,
-				BFFBD88A2C75E53F00D4F3AF /* ContentView.swift */,
+				BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */,
+				BFC8DBEF2C762E970050B3A5 /* ContentView.swift */,
 				BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */,
 				BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */,
 				BFFBD88E2C75E54000D4F3AF /* Preview Content */,
@@ -139,7 +142,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFFBD88B2C75E53F00D4F3AF /* ContentView.swift in Sources */,
+				BFC8DBF02C762E970050B3A5 /* ContentView.swift in Sources */,
+				BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */,
 				BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -277,6 +281,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"SleepTimer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -302,6 +307,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"SleepTimer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
