@@ -40,11 +40,16 @@ struct SleepTimerApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra("Sleep Timer", systemImage: "moon.zzz.fill") {
+        MenuBarExtra() {
                 ContentView(timer: self.sleepTimer)
-            
+        } label: {
+            HStack {
+                Image(systemName: "moon.zzz.fill")
+//                if (sleepTimer.sleepTime != nil) {
+//                    Text(sleepTimer.timeUntilSleepTime)
+//                }
+            }
+
         }.menuBarExtraStyle(.window)
-        
-        
     }
 }

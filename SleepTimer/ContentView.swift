@@ -29,53 +29,32 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 5) {
-            if (sleepTimer.sleepTime != nil) {
+            if (sleepTimer.nextSleepTime != nil) {
                
-                Text("\(minutesToClock(input: sleepTimer.minutesUntilSleep!))").font(.system(size: 48, weight: .bold, design: .monospaced))
-                Button("Cancel Timer") {
-                    sleepTimer.clear()
-                }.buttonStyle(DisableButtonStyle())
-                HStack {
-                    Button("+5m") {
-                        sleepTimer.snooze(minutes: 5)
-                    }.clipShape(Capsule())
-                    
-                    Button("+15m") {
-                        sleepTimer.snooze(minutes: 15)
-                    }.clipShape(Capsule())
-                    Button("+30m") {
-                        sleepTimer.snooze(minutes: 30)
-                    }.clipShape(Capsule())
-                    
-                    Button("+45") {
-                        sleepTimer.snooze(minutes: 45)
-                    }.clipShape(Capsule())
-                    
-                    Button("+1h") {
-                        sleepTimer.snooze(minutes: 60)
-                    }.clipShape(Capsule())
-
+                Text("\(sleepTimer.humanReadable!)").font(.system(size: 48, weight: .bold, design: .monospaced))
+                if (sleepTimer.sleepTime != nil) {
+                    Button("Cancel Timer") {
+                        sleepTimer.clear()
+                    }.buttonStyle(DisableButtonStyle())
                 }
-
-            } else {
-                HStack {
-                    Button("15m") {
-                        sleepTimer.setSleepTime(minutes: 15)
-                    }.clipShape(Capsule())
-                    
-                    Button("30m") {
-                        sleepTimer.setSleepTime(minutes: 30)
-                    }.clipShape(Capsule())
-                    Button("45m") {
-                        sleepTimer.setSleepTime(minutes: 45)
-                    }.clipShape(Capsule())
-                    Button("1h") {
-                        sleepTimer.setSleepTime(minutes: 60)
-                    }.clipShape(Capsule())
-                    Button("2h") {
-                        sleepTimer.setSleepTime(minutes: 120)
-                    }.clipShape(Capsule())
-                }
+            }
+            HStack {
+                Button("15m") {
+                    sleepTimer.setSleepTime(minutes: 15)
+                }.clipShape(Capsule())
+                
+                Button("30m") {
+                    sleepTimer.setSleepTime(minutes: 30)
+                }.clipShape(Capsule())
+                Button("45m") {
+                    sleepTimer.setSleepTime(minutes: 45)
+                }.clipShape(Capsule())
+                Button("1h") {
+                    sleepTimer.setSleepTime(minutes: 60)
+                }.clipShape(Capsule())
+                Button("2h") {
+                    sleepTimer.setSleepTime(minutes: 120)
+                }.clipShape(Capsule())
             }
 
             Toggle(

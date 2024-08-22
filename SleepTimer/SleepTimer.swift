@@ -9,7 +9,7 @@
 import SwiftUI
 import UserNotifications
 
-func sleep() -> String {
+@discardableResult func sleep() -> String {
     let task = Process()
     let pipe = Pipe()
     
@@ -41,57 +41,41 @@ func warn(minutes: Int) {
     UNUserNotificationCenter.current().add(request)
 }
 
-func minutesToClock(input: Int) -> String {
-    if (input < 60) {
-        return "\(input)m"
+func humanIntervalFromNow(input: Date?) -> String {
+    if (input == nil) {
+        return "NA"
     }
+    var elapsed = Int(input!.timeIntervalSince(Date.now))
     
-    let hours = input / 60
-    let minutes = input - hours * 60
-    if (hours == 0) {
-        return "\(minutes)m"
-    } else if (minutes == 0) {
-        return "\(hours)h"
-    }
-    return "\(hours)h \(minutes)m"
-}
-
-
-func minutesToEnglish(input: Int) -> String {
-    if (input < 60) {
-        return "\(input) minutes"
-    }
+    let hours = Int(elapsed / (60 * 60))
     
-    let hours = input / 60
-    let minutes = input - hours * 60
-    if (minutes < 15) {
-        return "\(hours) hours"
-    }
-    if (minutes < 45) {
-        return "\(hours).5 hours"
-    }
+    elapsed -= hours * 60 * 60
+    let minutes = Int(elapsed / 60)
     
-    return "\(hours + 1) hours"
-}
-func minutesUntil(time: Date) -> Int {
-    let calendar = Calendar.current
-    let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
-    let nowComponents = calendar.dateComponents([.hour, .minute], from: Date())
-
-    return calendar.dateComponents([.minute], from: nowComponents, to: timeComponents).minute!
+    let seconds = elapsed - minutes * 60
+    
+    if (hours > 0) {
+        return "\(String(format: "%02d", hours)):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
+    }
+    return "\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
 }
 
 class SleepTimer: ObservableObject {
     @Published var sleepTime: Date? = nil
     @Published var warnTime: Date? = nil
-    @Published var minutesUntilSleep: Int? = nil
+
+    
     
     @Published var bedTimeEnabled: Bool = false
     @Published var bedTimeHour: Int = 1
     @Published var bedTimeMinute: Int = 0
     @Published var bedTimeAmPm: String = "PM"
     
+    @Published var nextSleepTime: Date? = nil
+    @Published var humanReadable: String? = nil
+    
     let defaults = UserDefaults.standard
+    var bedTimeTriggered: Bool = false
     
     var timer: Timer?
     init() {
@@ -103,19 +87,27 @@ class SleepTimer: ObservableObject {
         self.bedTimeMinute = defaults.integer(forKey: "bedTimeMinute")
         self.bedTimeAmPm = defaults.string(forKey: "bedTimeAmPm") ?? "PM"
         
+        self.nextSleepTime = self.getSleepAt()
+        self.humanReadable = self.nextSleepTime != nil ? humanIntervalFromNow(input: nextSleepTime): nil
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            if (self.sleepTime == nil && !self.bedTimeTriggered && self.bedTimeEnabled && self.isAfterBedTime()) {
+                self.bedTimeTriggered = true
+                sleep()
+                return
+            }
+            self.nextSleepTime = self.getSleepAt()
+            self.humanReadable = self.nextSleepTime != nil ? humanIntervalFromNow(input: self.nextSleepTime): nil
             if (self.sleepTime != nil) {
-                self.minutesUntilSleep = minutesUntil(time: self.sleepTime!)
                 if (Date() > self.sleepTime!) {
+                    sleep()
                     self.clear()
-                    print(sleep())
                 }
             }
             if (self.warnTime != nil && Date() > self.warnTime!) {
                 self.warnTime = nil
                 warn(minutes: 2)
             }
-            print("TIMER SLEEP TIME", self.sleepTime)
         })
         
         let doneAction = UNNotificationAction(identifier: "sleepTimeReminder.doneAction", title: "Done", options: [])
@@ -133,13 +125,43 @@ class SleepTimer: ObservableObject {
         timer?.invalidate()
     }
     
+    func isAfterBedTime() -> Bool {
+        print(self.getBedTime())
+        return Date() > self.getBedTime()
+    }
+    
+    func getSleepAt() -> Date? {
+        if (self.sleepTime != nil) {
+            return self.sleepTime!
+        }
+        if (self.bedTimeEnabled) {
+            return getBedTime()
+        }
+        return nil
+    }
+    
+    func getBedTime() -> Date {
+        return Calendar.current.date(
+            bySettingHour: self.bedTimeAmPm == "PM" ? self.bedTimeHour + 12 : self.bedTimeHour,
+            minute: self.bedTimeMinute,
+            second: 0,
+            of: Date()
+        )!
+
+    }
+    
     func clear() {
-        self.minutesUntilSleep = nil
+        self.bedTimeTriggered = false
         self.sleepTime = nil
         self.warnTime = nil
+        self.nextSleepTime = self.getSleepAt()
+        self.humanReadable = self.nextSleepTime != nil ? humanIntervalFromNow(input: self.nextSleepTime): nil
     }
     
     func saveBedTime() {
+        if (self.getBedTime() > Date()) {
+            self.bedTimeTriggered = false
+        }
         let defaults = UserDefaults.standard
         defaults.set(bedTimeEnabled, forKey: "bedTimeEnabled")
         defaults.set(bedTimeHour, forKey: "bedTimeHour")
@@ -153,17 +175,12 @@ class SleepTimer: ObservableObject {
             value: minutes,
             to: Date()
         )!
-        
-        self.minutesUntilSleep = minutesUntil(time: self.sleepTime!)
-        
+        self.nextSleepTime = self.getSleepAt()
+        self.humanReadable = self.nextSleepTime != nil ? humanIntervalFromNow(input: nextSleepTime): nil
         self.warnTime = Calendar.current.date(
             byAdding: .minute,
             value: minutes - 2,
             to: Date()
         )!
-    }
-    
-    func snooze(minutes: Int) {
-        setSleepTime(minutes: minutesUntilSleep! + minutes)
     }
 }
