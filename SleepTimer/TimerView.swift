@@ -19,7 +19,7 @@ struct DisableButtonStyle: ButtonStyle {
     }
 }
 
-struct ContentView: View {
+struct TimerView: View {
     @StateObject var sleepTimer: SleepTimer
 
     
@@ -97,5 +97,5 @@ struct ContentView: View {
 
 
 #Preview {
-    ContentView(timer: SleepTimer())
+    TimerView(timer: SleepTimer())
 }

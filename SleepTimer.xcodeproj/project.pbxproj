@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */; };
-		BFC8DBF42C767D960050B3A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBF32C767D960050B3A5 /* ContentView.swift */; };
+		BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */; };
+		BFEEEFDF2C776BE600D35F92 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDE2C776BE600D35F92 /* TimerView.swift */; };
 		BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */; };
 		BFFBD88D2C75E54000D4F3AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */; };
 		BFFBD8902C75E54000D4F3AF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88F2C75E54000D4F3AF /* Preview Assets.xcassets */; };
@@ -16,7 +17,8 @@
 
 /* Begin PBXFileReference section */
 		BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
-		BFC8DBF32C767D960050B3A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BFEEEFDE2C776BE600D35F92 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerApp.swift; sourceTree = "<group>"; };
 		BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -56,7 +58,8 @@
 			children = (
 				BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */,
 				BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */,
-				BFC8DBF32C767D960050B3A5 /* ContentView.swift */,
+				BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */,
+				BFEEEFDE2C776BE600D35F92 /* TimerView.swift */,
 				BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */,
 				BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */,
 				BFFBD88E2C75E54000D4F3AF /* Preview Content */,
@@ -142,8 +145,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFEEEFDF2C776BE600D35F92 /* TimerView.swift in Sources */,
 				BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */,
-				BFC8DBF42C767D960050B3A5 /* ContentView.swift in Sources */,
+				BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */,
 				BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

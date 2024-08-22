@@ -41,10 +41,11 @@ struct SleepTimerApp: App {
 
     var body: some Scene {
         MenuBarExtra() {
-                ContentView(timer: self.sleepTimer)
+                TimerView(timer: self.sleepTimer)
         } label: {
             HStack {
                 Image(systemName: "moon.zzz.fill")
+                // This was causing crashes on my laptop
 //                if (sleepTimer.sleepTime != nil) {
 //                    Text(sleepTimer.timeUntilSleepTime)
 //                }
