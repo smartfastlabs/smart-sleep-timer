@@ -10,6 +10,8 @@
 		BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */; };
 		BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */; };
 		BFEEEFDF2C776BE600D35F92 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDE2C776BE600D35F92 /* TimerView.swift */; };
+		BFEEEFE12C77CE9D00D35F92 /* ConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFE02C77CE9D00D35F92 /* ConfigService.swift */; };
+		BFEEEFE42C78B5E700D35F92 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = BFEEEFE32C78B5E700D35F92 /* LaunchAtLogin */; };
 		BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */; };
 		BFFBD88D2C75E54000D4F3AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */; };
 		BFFBD8902C75E54000D4F3AF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88F2C75E54000D4F3AF /* Preview Assets.xcassets */; };
@@ -19,6 +21,7 @@
 		BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
 		BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		BFEEEFDE2C776BE600D35F92 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
+		BFEEEFE02C77CE9D00D35F92 /* ConfigService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigService.swift; sourceTree = "<group>"; };
 		BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerApp.swift; sourceTree = "<group>"; };
 		BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -31,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFEEEFE42C78B5E700D35F92 /* LaunchAtLogin in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +64,7 @@
 				BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */,
 				BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */,
 				BFEEEFDE2C776BE600D35F92 /* TimerView.swift */,
+				BFEEEFE02C77CE9D00D35F92 /* ConfigService.swift */,
 				BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */,
 				BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */,
 				BFFBD88E2C75E54000D4F3AF /* Preview Content */,
@@ -91,6 +96,9 @@
 			dependencies = (
 			);
 			name = SleepTimer;
+			packageProductDependencies = (
+				BFEEEFE32C78B5E700D35F92 /* LaunchAtLogin */,
+			);
 			productName = SleepTimer;
 			productReference = BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */;
 			productType = "com.apple.product-type.application";
@@ -119,6 +127,9 @@
 				Base,
 			);
 			mainGroup = BFFBD87C2C75E53F00D4F3AF;
+			packageReferences = (
+				BFEEEFE22C78B5E700D35F92 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
+			);
 			productRefGroup = BFFBD8862C75E53F00D4F3AF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -149,6 +160,7 @@
 				BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */,
 				BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */,
 				BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */,
+				BFEEEFE12C77CE9D00D35F92 /* ConfigService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +290,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = SleepTimer/SleepTimer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -306,6 +319,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = SleepTimer/SleepTimer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -351,6 +365,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BFEEEFE22C78B5E700D35F92 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Legacy";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BFEEEFE32C78B5E700D35F92 /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BFEEEFE22C78B5E700D35F92 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */;
+			productName = LaunchAtLogin;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BFFBD87D2C75E53F00D4F3AF /* Project object */;
 }

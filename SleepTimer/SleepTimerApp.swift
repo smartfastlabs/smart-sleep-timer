@@ -24,31 +24,29 @@ class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
 }
 
 
-
 @main
 struct SleepTimerApp: App {
     @StateObject var sleepTimer: SleepTimer
+    var showMenuBar: Bool = true
     
     private var notificDelegate : NotificationDelegate = NotificationDelegate()
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+    private var config: ConfigService =  ConfigService()
     init(){
-        let sleepTimer = SleepTimer()
+        //    https://github.com/thompsonate/Shifty/blob/master/Shifty/CBBlueLightClient.h
+        let sleepTimer = SleepTimer(config: config)
         self._sleepTimer = StateObject(wrappedValue: sleepTimer)
         notificDelegate.sleepTimer = sleepTimer
         UNUserNotificationCenter.current().delegate = notificDelegate
     }
 
     var body: some Scene {
-        MenuBarExtra() {
-                TimerView(timer: self.sleepTimer)
+        MenuBarExtra(isInserted: .constant(true)) {
+            TimerView(timer: self.sleepTimer)
+
+            SettingsView(timer: sleepTimer, config: config)
         } label: {
             HStack {
                 Image(systemName: "moon.zzz.fill")
-                // This was causing crashes on my laptop
-//                if (sleepTimer.sleepTime != nil) {
-//                    Text(sleepTimer.timeUntilSleepTime)
-//                }
             }
 
         }.menuBarExtraStyle(.window)

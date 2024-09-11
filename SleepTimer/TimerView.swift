@@ -10,8 +10,7 @@ import SwiftUI
 struct DisableButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding(2)
-            .frame(maxWidth: .infinity)
+            .frame(width: 220)
             .background(.red)
             .scaleEffect(configuration.isPressed ? 1.2 : 1)
             .foregroundStyle(.white)
@@ -21,7 +20,7 @@ struct DisableButtonStyle: ButtonStyle {
 
 struct TimerView: View {
     @StateObject var sleepTimer: SleepTimer
-
+    @Environment(\.openWindow) private var openWindow
     
     init (timer: SleepTimer) {
         self._sleepTimer = StateObject(wrappedValue: timer)
@@ -29,18 +28,48 @@ struct TimerView: View {
     
     var body: some View {
         VStack(spacing: 5) {
-            if (sleepTimer.nextSleepTime != nil) {
-               
-                Text("\(sleepTimer.humanReadable!)").font(.system(size: 48, weight: .bold, design: .monospaced))
+            
+            let nextSleepTime = sleepTimer.getNextSleepTime()
+            if (nextSleepTime == nil) {
+                Text("DISABLED").font(
+                    .system(
+                        size: 40,
+                        weight: .bold,
+                        design: .monospaced
+                    )
+                )
+            } else {
                 if (sleepTimer.sleepTime != nil) {
+                    HStack() {
+                        Image(systemName: "moon.zzz.fill").resizable().scaledToFit().frame(width: 24, height: 24)
+                        Text("\(describeInterval(from: sleepTimer.currentTime, to: nextSleepTime!))").font(
+                            .system(
+                                size: 40,
+                                weight: .bold,
+                                design: .monospaced
+                            )
+                        )
+                    }
                     Button("Cancel Timer") {
                         sleepTimer.clear()
                     }.buttonStyle(DisableButtonStyle())
                 }
+                else {
+                    HStack() {
+                        Image(systemName: "bed.double.circle").resizable().scaledToFit().frame(width: 24, height: 24)
+                        Text("\(getWallTime(time: sleepTimer.getBedTime()))").font(
+                            .system(
+                                size: 40,
+                                weight: .bold,
+                                design: .monospaced
+                            )
+                        )
+                    }
+                }
             }
             HStack {
                 Button("15m") {
-                    sleepTimer.setSleepTime(minutes: 15)
+                    sleepTimer.setSleepTime(minutes: 1)
                 }.clipShape(Capsule())
                 
                 Button("30m") {
@@ -56,46 +85,11 @@ struct TimerView: View {
                     sleepTimer.setSleepTime(minutes: 120)
                 }.clipShape(Capsule())
             }
-
-            Toggle(
-                "Enable Bedtime",
-                isOn: $sleepTimer.bedTimeEnabled
-            ).onChange(of: sleepTimer.bedTimeEnabled) {
-                sleepTimer.saveBedTime()
-            }.frame(maxWidth: .infinity, alignment: .leading)
-            
-            if (sleepTimer.bedTimeEnabled) {
-                HStack {
-                    Picker("", selection: $sleepTimer.bedTimeHour) {
-                        ForEach(1...12, id: \.self) { hour in
-                            Text(String(hour)).tag(String(hour))
-                        }
-                    }.onChange(of: sleepTimer.bedTimeHour) {
-                        sleepTimer.saveBedTime()
-                    }
-                    Picker(":", selection: $sleepTimer.bedTimeMinute) {
-                        ForEach(0...59, id: \.self) { minute in
-                            Text(String(format: "%02d", minute)).tag(minute)
-                        }
-                    }.onChange(of: sleepTimer.bedTimeMinute) {
-                        sleepTimer.saveBedTime()
-                    }
-                    Picker("", selection: $sleepTimer.bedTimeAmPm) {
-                        Text("AM").tag("AM")
-                        Text("PM").tag("PM")
-                    }.onChange(of: sleepTimer.bedTimeAmPm) {
-                        sleepTimer.saveBedTime()
-                    }
-                }
-            }
-
         }
-        .padding()
     }
-
 }
 
 
 #Preview {
-    TimerView(timer: SleepTimer())
+    TimerView(timer: SleepTimer(config:ConfigService()))
 }
