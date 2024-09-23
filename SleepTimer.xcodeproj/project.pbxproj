@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF876FBC2CA1F22E00E6D5FF /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF876FBB2CA1F22E00E6D5FF /* Utils.swift */; };
 		BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */; };
 		BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */; };
 		BFEEEFDF2C776BE600D35F92 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDE2C776BE600D35F92 /* TimerView.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF876FBB2CA1F22E00E6D5FF /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
 		BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		BFEEEFDE2C776BE600D35F92 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */,
 				BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */,
 				BFFBD88E2C75E54000D4F3AF /* Preview Content */,
+				BF876FBB2CA1F22E00E6D5FF /* Utils.swift */,
 			);
 			path = SleepTimer;
 			sourceTree = "<group>";
@@ -161,6 +164,7 @@
 				BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */,
 				BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */,
 				BFEEEFE12C77CE9D00D35F92 /* ConfigService.swift in Sources */,
+				BF876FBC2CA1F22E00E6D5FF /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,15 +296,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = SleepTimer/SleepTimer.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"SleepTimer/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -321,15 +326,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = SleepTimer/SleepTimer.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"SleepTimer/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

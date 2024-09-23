@@ -31,7 +31,7 @@ struct TimerView: View {
             
             let nextSleepTime = sleepTimer.getNextSleepTime()
             if (nextSleepTime == nil) {
-                Text("DISABLED").font(
+                Text("").font(
                     .system(
                         size: 40,
                         weight: .bold,
@@ -57,7 +57,7 @@ struct TimerView: View {
                 else {
                     HStack() {
                         Image(systemName: "bed.double.circle").resizable().scaledToFit().frame(width: 24, height: 24)
-                        Text("\(getWallTime(time: sleepTimer.getBedTime()))").font(
+                        Text("\(getWallTime(time: nextSleepTime!))").font(
                             .system(
                                 size: 40,
                                 weight: .bold,

@@ -32,23 +32,35 @@ struct SleepTimerApp: App {
     private var notificDelegate : NotificationDelegate = NotificationDelegate()
     private var config: ConfigService =  ConfigService()
     init(){
-        //    https://github.com/thompsonate/Shifty/blob/master/Shifty/CBBlueLightClient.h
         let sleepTimer = SleepTimer(config: config)
         self._sleepTimer = StateObject(wrappedValue: sleepTimer)
         notificDelegate.sleepTimer = sleepTimer
         UNUserNotificationCenter.current().delegate = notificDelegate
     }
-
+    
     var body: some Scene {
         MenuBarExtra(isInserted: .constant(true)) {
             TimerView(timer: self.sleepTimer)
-
+            
             SettingsView(timer: sleepTimer, config: config)
         } label: {
-            HStack {
-                Image(systemName: "moon.zzz.fill")
+            
+            let bedTime = self.sleepTimer.getBedTime()
+            let iconName = if (self.sleepTimer.willSleepIn(minutes: 30)){
+                "StatusBarDangerIcon"
+            } else if (bedTime != nil && bedTime! < Date()) {
+                "StatusBarAlertIcon"
+            } else {
+                "StatusBarIcon"
             }
-
+            let image: NSImage = {
+                let ratio = $0.size.height / $0.size.width
+                $0.size.height = 20
+                $0.size.width = 20 / ratio
+                return $0
+            }(NSImage(named: iconName)!)
+            
+            Image(nsImage: image)
         }.menuBarExtraStyle(.window)
     }
 }
