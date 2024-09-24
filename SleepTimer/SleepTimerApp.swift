@@ -27,6 +27,7 @@ class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
 @main
 struct SleepTimerApp: App {
     @StateObject var sleepTimer: SleepTimer
+    @NSApplicationDelegateAdaptor(ActivityTracker.self) var appDelegate
     var showMenuBar: Bool = true
     
     private var notificDelegate : NotificationDelegate = NotificationDelegate()
@@ -36,6 +37,7 @@ struct SleepTimerApp: App {
         self._sleepTimer = StateObject(wrappedValue: sleepTimer)
         notificDelegate.sleepTimer = sleepTimer
         UNUserNotificationCenter.current().delegate = notificDelegate
+        
     }
     
     var body: some Scene {
