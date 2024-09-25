@@ -15,24 +15,19 @@ class SleepTimer: ObservableObject {
     @Published var warnTime: Date? = nil
     @Published var currentTime: Date
     
-    let defaults = UserDefaults.standard
     var bedTimeTriggeredAt: Date? = nil
     
-    var timer: Timer?
+    var timer: Timer? = nil
     var config: ConfigService
+    var lastMousePosition: NSPoint
     
     init(config: ConfigService) {
         self.currentTime = Date()
         self.config = config
-        
-        let bedTime = self.getBedTime()
-        if (bedTime != nil && bedTime! < self.currentTime) {
-            self.bedTimeTriggeredAt = Date()
-        }
-        
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+        self.lastMousePosition = NSEvent.mouseLocation
+        self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             self.currentTime = Date()
+            if (self.lastMoustPosition != )
             if (self.shouldTriggerBedTime()) {
                 self.bedTimeTriggeredAt = Date()
                 print("BED TIME")
@@ -48,6 +43,11 @@ class SleepTimer: ObservableObject {
             }
         })
         
+        let bedTime = self.getBedTime()
+        if (bedTime != nil && bedTime! < self.currentTime) {
+            self.bedTimeTriggeredAt = Date()
+        }
+
         let doneAction = UNNotificationAction(
             identifier: "sleepTimeReminder.doneAction",
             title: "Done",

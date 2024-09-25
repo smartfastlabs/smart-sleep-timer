@@ -112,7 +112,7 @@ struct SettingsView: View {
                 ).stroke(.gray, lineWidth: 1)
             )
             Text(
-                "[Smartfast Labs LLC](https://smartfast.com)"
+                "[Smartfast Labs](https://smartfast.com)"
             )
             
         }
