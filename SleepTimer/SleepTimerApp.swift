@@ -27,11 +27,10 @@ class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
 @main
 struct SleepTimerApp: App {
     @StateObject var sleepTimer: SleepTimer
-    @NSApplicationDelegateAdaptor(ActivityTracker.self) var appDelegate
-    var showMenuBar: Bool = true
     
     private var notificDelegate : NotificationDelegate = NotificationDelegate()
     private var config: ConfigService =  ConfigService()
+    
     init(){
         let sleepTimer = SleepTimer(config: config)
         self._sleepTimer = StateObject(wrappedValue: sleepTimer)

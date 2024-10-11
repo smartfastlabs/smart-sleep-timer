@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF0F29422CA2F453009D1B79 /* ActivityTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0F29412CA2F453009D1B79 /* ActivityTracker.swift */; };
 		BF876FBC2CA1F22E00E6D5FF /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF876FBB2CA1F22E00E6D5FF /* Utils.swift */; };
 		BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */; };
 		BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */; };
@@ -20,7 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BF0F29412CA2F453009D1B79 /* ActivityTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityTracker.swift; sourceTree = "<group>"; };
+		BF4BA33A2CADD54300CFF9AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		BF876FBB2CA1F22E00E6D5FF /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
 		BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -64,6 +63,7 @@
 		BFFBD8872C75E53F00D4F3AF /* SleepTimer */ = {
 			isa = PBXGroup;
 			children = (
+				BF4BA33A2CADD54300CFF9AD /* Info.plist */,
 				BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */,
 				BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */,
 				BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */,
@@ -73,7 +73,6 @@
 				BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */,
 				BFFBD88E2C75E54000D4F3AF /* Preview Content */,
 				BF876FBB2CA1F22E00E6D5FF /* Utils.swift */,
-				BF0F29412CA2F453009D1B79 /* ActivityTracker.swift */,
 			);
 			path = SleepTimer;
 			sourceTree = "<group>";
@@ -164,7 +163,6 @@
 			files = (
 				BFEEEFDF2C776BE600D35F92 /* TimerView.swift in Sources */,
 				BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */,
-				BF0F29422CA2F453009D1B79 /* ActivityTracker.swift in Sources */,
 				BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */,
 				BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */,
 				BFEEEFE12C77CE9D00D35F92 /* ConfigService.swift in Sources */,
@@ -309,6 +307,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SleepTimer/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sleep Timer";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -341,6 +340,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SleepTimer/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sleep Timer";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;

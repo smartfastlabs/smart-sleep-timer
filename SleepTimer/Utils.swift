@@ -44,7 +44,7 @@ func warn(minutes: Int) {
 }
 
 func describeInterval(from: Date, to: Date) -> String {
-    var elapsed = Int(to.timeIntervalSince(from))
+    var elapsed = Int(from.distance(to: to))
     
     if (elapsed < 0) {
         return "PAST"

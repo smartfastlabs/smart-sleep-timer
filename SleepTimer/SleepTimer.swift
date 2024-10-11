@@ -12,7 +12,6 @@ import UserNotifications
 
 class SleepTimer: ObservableObject {
     @Published var sleepTime: Date? = nil
-    @Published var warnTime: Date? = nil
     @Published var currentTime: Date
     
     var bedTimeTriggeredAt: Date? = nil
@@ -20,6 +19,7 @@ class SleepTimer: ObservableObject {
     var timer: Timer? = nil
     var config: ConfigService
     var lastMousePosition: NSPoint
+    var lastActivity: Date = Date()
     
     init(config: ConfigService) {
         self.currentTime = Date()
@@ -27,19 +27,18 @@ class SleepTimer: ObservableObject {
         self.lastMousePosition = NSEvent.mouseLocation
         self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             self.currentTime = Date()
-            if (self.lastMoustPosition != )
+            if (self.lastMousePosition != NSEvent.mouseLocation) {
+                self.lastMousePosition = NSEvent.mouseLocation
+                self.handleActivity()
+            }
             if (self.shouldTriggerBedTime()) {
                 self.bedTimeTriggeredAt = Date()
                 print("BED TIME")
-                sleep()
+                self.goToSleep()
             } else if (self.sleepTime != nil && Date() > self.sleepTime!) {
                 print("SLEEP TIMER")
-                sleep()
+                self.goToSleep()
                 self.clear()
-            } else if (self.config.warnBeforeSleeping && self.warnTime != nil && Date() > self.warnTime!) {
-                print("WARNING")
-                self.warnTime = nil
-                warn(minutes: 2)
             }
         })
         
@@ -70,6 +69,18 @@ class SleepTimer: ObservableObject {
     }
     deinit {
         timer?.invalidate()
+    }
+   
+    func goToSleep() {
+        if (self.lastActivity.distance(to: Date()) > 60 * 2) {
+            sleep()
+        }
+    }
+    
+    func handleActivity() {
+        self.lastActivity = Date()
+        print("handleActivity")
+        
     }
     
     func shouldTriggerBedTime() -> Bool {
@@ -128,7 +139,6 @@ class SleepTimer: ObservableObject {
             self.bedTimeTriggeredAt = nil
         }
         self.sleepTime = nil
-        self.warnTime = nil
     }
     
     func willSleepIn(minutes: Int) -> Bool {
@@ -144,6 +154,16 @@ class SleepTimer: ObservableObject {
         
     }
     
+    func setSleepInterval(minutes: Int) {
+        self.config.set(sleepIntervalMinutes: minutes)
+        
+        if (minutes > 0) {
+            return self.setSleepTime(minutes: minutes)
+        } else {
+            return self.clear()
+        }
+    }
+    
     func setSleepTime(minutes: Int) {
         self.sleepTime = Calendar.current.date(
             byAdding: .minute,
@@ -151,10 +171,5 @@ class SleepTimer: ObservableObject {
             to: Date()
         )!
         
-        self.warnTime = Calendar.current.date(
-            byAdding: .minute,
-            value: minutes - 2,
-            to: Date()
-        )!
     }
 }

@@ -64,7 +64,7 @@ struct SettingsView: View {
     }
     var body: some View {
         VStack() {
-            Text("- Settings -").padding(2)
+            Text("")
             VStack {
                 VStack {
                     HStack {
@@ -93,18 +93,26 @@ struct SettingsView: View {
                             }
                         }
                     }
-                    Toggle(
-                        "Notify Before Sleeping",
-                        isOn: $config.warnBeforeSleeping
-                    ).onChange(of: config.warnBeforeSleeping) {
-                        self.setWarnBeforeSleeping()
-                    }.frame(maxWidth: .infinity, alignment: .leading)
+//                    Toggle(
+//                        "Notify Before Sleeping",
+//                        isOn: $config.warnBeforeSleeping
+//                    ).onChange(of: config.warnBeforeSleeping) {
+//                        self.setWarnBeforeSleeping()
+//                    }.frame(maxWidth: .infinity, alignment: .leading)
                     Toggle(
                         "Run on Start Up",
                         isOn: $config.runOnStartUp
                     ).onChange(of: config.runOnStartUp) {
                         self.setRunOnStartUp()
                     }.frame(maxWidth: .infinity, alignment: .leading)
+                    Button {
+                        NSApplication.shared.terminate(nil)
+                        
+                    } label: {
+                        Text("Quit")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent).tint(.red)
                 }.padding()
             }.overlay(
                 RoundedRectangle(

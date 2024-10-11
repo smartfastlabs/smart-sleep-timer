@@ -14,6 +14,7 @@ class ConfigService: ObservableObject {
     @Published var bedTimeMinute: Int = 0
     @Published var warnBeforeSleeping: Bool = false
     @Published var runOnStartUp: Bool = false
+    @Published var sleepIntervalMinutes: Int = 5
     
     let defaults = UserDefaults.standard
     
@@ -26,6 +27,7 @@ class ConfigService: ObservableObject {
             self.bedTimeHour = 10
         }
         self.bedTimeMinute = defaults.integer(forKey: "bedTimeMinute")
+        self.sleepIntervalMinutes = defaults.integer(forKey: "sleepIntervalMinutes")
     }
     
     func set(
@@ -33,8 +35,13 @@ class ConfigService: ObservableObject {
         warnBeforeSleeping: Bool? = nil,
         bedTimeHour: Int? = nil,
         bedTimeMinute: Int? = nil,
-        runOnStartUp: Bool? = nil
+        runOnStartUp: Bool? = nil,
+        sleepIntervalMinutes: Int? = nil
     ) {
+        if (sleepIntervalMinutes != nil) {
+            self.sleepIntervalMinutes = sleepIntervalMinutes!
+            defaults.set(sleepIntervalMinutes, forKey: "sleepIntervalMinutes")
+        }
         if (bedTimeEnabled != nil) {
             self.bedTimeEnabled = bedTimeEnabled!
             defaults.set(bedTimeEnabled, forKey: "bedTimeEnabled")
