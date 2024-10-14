@@ -8,6 +8,10 @@
 
 import SwiftUI
 import UserNotifications
+/*
+ TODO:
+ 1) Maybe have an option to disable sleep: https://www.hackingwithswift.com/forums/macos/have-app-prevent-computer-going-to-sleep/23419
+ */
 
 class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
     var sleepTimer: SleepTimer?
@@ -20,6 +24,27 @@ class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
             break
         }
         completionHandler()
+    }
+
+    @objc private func sleepListener(_ aNotification: Notification) {
+        print("listening to sleep")
+        if aNotification.name == NSWorkspace.willSleepNotification {
+            print("Going to sleep")
+        } else if aNotification.name == NSWorkspace.didWakeNotification {
+            if (self.sleepTimer != nil ) {
+                self.sleepTimer!.handleActivity()
+            }
+            print("Woke up")
+        } else {
+            print("Some other event other than the first two")
+        }
+    }
+
+    func addObservers() {
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(sleepListener(_:)),
+                                                          name: NSWorkspace.willSleepNotification, object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(sleepListener(_:)),
+                                                          name: NSWorkspace.didWakeNotification, object: nil)
     }
 }
 
@@ -35,10 +60,10 @@ struct SleepTimerApp: App {
         let sleepTimer = SleepTimer(config: config)
         self._sleepTimer = StateObject(wrappedValue: sleepTimer)
         notificDelegate.sleepTimer = sleepTimer
+        notificDelegate.addObservers()
         UNUserNotificationCenter.current().delegate = notificDelegate
-        
     }
-    
+
     var body: some Scene {
         MenuBarExtra(isInserted: .constant(true)) {
             TimerView(timer: self.sleepTimer)
