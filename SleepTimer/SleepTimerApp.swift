@@ -25,7 +25,7 @@ class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
         }
         completionHandler()
     }
-
+    
     @objc private func sleepListener(_ aNotification: Notification) {
         print("listening to sleep")
         if aNotification.name == NSWorkspace.willSleepNotification {
@@ -39,7 +39,7 @@ class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
             print("Some other event other than the first two")
         }
     }
-
+    
     func addObservers() {
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(sleepListener(_:)),
                                                           name: NSWorkspace.willSleepNotification, object: nil)
@@ -48,6 +48,29 @@ class NotificationDelegate: NSObject , UNUserNotificationCenterDelegate{
     }
 }
 
+struct MenuBarIcon: View {
+    @Environment(\.colorScheme) var colorScheme
+    @StateObject var sleepTimer: SleepTimer
+   
+    var body: some View {
+        let bedTime = self.sleepTimer.getBedTime()
+        let iconName = if (self.sleepTimer.willSleepIn(minutes: 30)){
+            "StatusBarDangerIcon"
+        } else if (bedTime != nil && bedTime! < Date()) {
+            "StatusBarAlertIcon"
+        } else {
+            "StatusBarIcon"
+        }
+        let image: NSImage = {
+            let ratio = $0.size.height / $0.size.width
+            $0.size.height = 20
+            $0.size.width = 20 / ratio
+            return $0
+        }(NSImage(named: colorScheme == .light ? iconName: "\(iconName)White")!)
+        
+        Image(nsImage: image)
+    }
+}
 
 @main
 struct SleepTimerApp: App {
@@ -63,7 +86,7 @@ struct SleepTimerApp: App {
         notificDelegate.addObservers()
         UNUserNotificationCenter.current().delegate = notificDelegate
     }
-
+    
     var body: some Scene {
         MenuBarExtra(isInserted: .constant(true)) {
             TimerView(timer: self.sleepTimer)
@@ -71,22 +94,7 @@ struct SleepTimerApp: App {
             SettingsView(timer: sleepTimer, config: config)
         } label: {
             
-            let bedTime = self.sleepTimer.getBedTime()
-            let iconName = if (self.sleepTimer.willSleepIn(minutes: 30)){
-                "StatusBarDangerIcon"
-            } else if (bedTime != nil && bedTime! < Date()) {
-                "StatusBarAlertIcon"
-            } else {
-                "StatusBarIcon"
-            }
-            let image: NSImage = {
-                let ratio = $0.size.height / $0.size.width
-                $0.size.height = 20
-                $0.size.width = 20 / ratio
-                return $0
-            }(NSImage(named: iconName)!)
-            
-            Image(nsImage: image)
+            MenuBarIcon(sleepTimer: self.sleepTimer)
         }.menuBarExtraStyle(.window)
     }
 }
