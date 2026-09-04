@@ -3,34 +3,37 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF876FBC2CA1F22E00E6D5FF /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF876FBB2CA1F22E00E6D5FF /* Utils.swift */; };
-		BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */; };
-		BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */; };
-		BFEEEFDF2C776BE600D35F92 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFDE2C776BE600D35F92 /* TimerView.swift */; };
-		BFEEEFE12C77CE9D00D35F92 /* ConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEEEFE02C77CE9D00D35F92 /* ConfigService.swift */; };
 		BFEEEFE42C78B5E700D35F92 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = BFEEEFE32C78B5E700D35F92 /* LaunchAtLogin */; };
-		BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */; };
-		BFFBD88D2C75E54000D4F3AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */; };
-		BFFBD8902C75E54000D4F3AF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFBD88F2C75E54000D4F3AF /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BF4BA33A2CADD54300CFF9AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		BF876FBB2CA1F22E00E6D5FF /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
-		BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		BFEEEFDE2C776BE600D35F92 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
-		BFEEEFE02C77CE9D00D35F92 /* ConfigService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigService.swift; sourceTree = "<group>"; };
 		BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerApp.swift; sourceTree = "<group>"; };
-		BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		BFFBD88F2C75E54000D4F3AF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SleepTimer.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BFA0000000000000000000A1 /* Exceptions for "SleepTimer" folder in "SleepTimer" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BFFBD8842C75E53F00D4F3AF /* SleepTimer */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		BFFBD8872C75E53F00D4F3AF /* SleepTimer */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BFA0000000000000000000A1 /* Exceptions for "SleepTimer" folder in "SleepTimer" target */,
+			);
+			path = SleepTimer;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		BFFBD8822C75E53F00D4F3AF /* Frameworks */ = {
@@ -60,31 +63,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BFFBD8872C75E53F00D4F3AF /* SleepTimer */ = {
-			isa = PBXGroup;
-			children = (
-				BF4BA33A2CADD54300CFF9AD /* Info.plist */,
-				BFFBD8882C75E53F00D4F3AF /* SleepTimerApp.swift */,
-				BFC8DBF12C7632F50050B3A5 /* SleepTimer.swift */,
-				BFEEEFDC2C776BC100D35F92 /* SettingsView.swift */,
-				BFEEEFDE2C776BE600D35F92 /* TimerView.swift */,
-				BFEEEFE02C77CE9D00D35F92 /* ConfigService.swift */,
-				BFFBD88C2C75E54000D4F3AF /* Assets.xcassets */,
-				BFFBD8912C75E54000D4F3AF /* SleepTimer.entitlements */,
-				BFFBD88E2C75E54000D4F3AF /* Preview Content */,
-				BF876FBB2CA1F22E00E6D5FF /* Utils.swift */,
-			);
-			path = SleepTimer;
-			sourceTree = "<group>";
-		};
-		BFFBD88E2C75E54000D4F3AF /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				BFFBD88F2C75E54000D4F3AF /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -99,6 +77,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BFFBD8872C75E53F00D4F3AF /* SleepTimer */,
 			);
 			name = SleepTimer;
 			packageProductDependencies = (
@@ -115,8 +96,8 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					BFFBD8842C75E53F00D4F3AF = {
 						CreatedOnToolsVersion = 15.4;
@@ -124,7 +105,6 @@
 				};
 			};
 			buildConfigurationList = BFFBD8802C75E53F00D4F3AF /* Build configuration list for PBXProject "SleepTimer" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -132,9 +112,11 @@
 				Base,
 			);
 			mainGroup = BFFBD87C2C75E53F00D4F3AF;
+			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BFEEEFE22C78B5E700D35F92 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
 			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = BFFBD8862C75E53F00D4F3AF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -149,8 +131,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFFBD8902C75E54000D4F3AF /* Preview Assets.xcassets in Resources */,
-				BFFBD88D2C75E54000D4F3AF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,12 +141,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFEEEFDF2C776BE600D35F92 /* TimerView.swift in Sources */,
-				BFC8DBF22C7632F50050B3A5 /* SleepTimer.swift in Sources */,
-				BFEEEFDD2C776BC100D35F92 /* SettingsView.swift in Sources */,
-				BFFBD8892C75E53F00D4F3AF /* SleepTimerApp.swift in Sources */,
-				BFEEEFE12C77CE9D00D35F92 /* ConfigService.swift in Sources */,
-				BF876FBC2CA1F22E00E6D5FF /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +181,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -226,7 +201,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -270,6 +245,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -283,7 +259,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -305,7 +281,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"SleepTimer/Preview Content\"";
 				DEVELOPMENT_TEAM = 9JAT4CEKDU;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = NO;
+				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SleepTimer/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sleep Timer";
@@ -338,7 +314,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"SleepTimer/Preview Content\"";
 				DEVELOPMENT_TEAM = 9JAT4CEKDU;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = NO;
+				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SleepTimer/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sleep Timer";
