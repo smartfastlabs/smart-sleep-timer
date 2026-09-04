@@ -14,15 +14,14 @@ struct SleepTimerApp: App {
     }
 
     var body: some Scene {
+        // Both closures receive the models directly: modifiers on the MenuBarExtra
+        // scene itself do not reach its content or label views.
         MenuBarExtra {
-            TimerView()
-            SettingsView()
+            MenuBarContentView(preferences: preferences, scheduler: scheduler)
         } label: {
             MenuBarIcon(scheduler: scheduler)
         }
         .menuBarExtraStyle(.window)
-        .environment(preferences)
-        .environment(scheduler)
 
         Window("Welcome to Smart Sleep Timer", id: "welcome") {
             WelcomeView()
