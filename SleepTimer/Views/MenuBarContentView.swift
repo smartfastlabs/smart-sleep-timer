@@ -8,13 +8,81 @@ struct MenuBarContentView: View {
     let preferences: Preferences
     let scheduler: SleepScheduler
 
+    static let width: CGFloat = 320
+
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 12) {
             TimerView()
-            SettingsView()
+            Divider()
+            BedtimeRow()
+            Divider()
+            FooterRow()
         }
+        .padding(14)
+        .frame(width: Self.width)
         .environment(preferences)
         .environment(scheduler)
+    }
+}
+
+/// One-line bedtime summary with an enable switch. Details live in Settings.
+private struct BedtimeRow: View {
+    @Environment(Preferences.self) private var preferences
+    @Environment(SleepScheduler.self) private var scheduler
+
+    var body: some View {
+        @Bindable var preferences = preferences
+
+        HStack {
+            Label {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Bedtime")
+                    Text(bedtimeDescription)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } icon: {
+                Image(systemName: "bed.double")
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Toggle("Bedtime", isOn: $preferences.bedtimeEnabled)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .labelsHidden()
+        }
+    }
+
+    private var bedtimeDescription: String {
+        guard preferences.bedtimeEnabled else { return "Off" }
+        let time = preferences.bedtime.date(on: scheduler.now).map(Formatting.wallClock) ?? ""
+        return scheduler.isPastBedtime ? "Passed at \(time)" : "Tonight at \(time)"
+    }
+}
+
+private struct FooterRow: View {
+    @Environment(\.openSettings) private var openSettings
+
+    var body: some View {
+        HStack {
+            Button("Settings…") {
+                openSettings()
+                NSApp.activate()
+            }
+            .keyboardShortcut(",", modifiers: .command)
+
+            Spacer()
+
+            Button("Quit") {
+                NSApplication.shared.terminate(nil)
+            }
+            .keyboardShortcut("q", modifiers: .command)
+        }
+        .buttonStyle(.borderless)
+        .foregroundStyle(.secondary)
+        .font(.callout)
     }
 }
 

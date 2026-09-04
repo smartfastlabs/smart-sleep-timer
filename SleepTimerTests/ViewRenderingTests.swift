@@ -31,6 +31,11 @@ struct ViewRenderingTests {
         render(MenuBarIcon(scheduler: scheduler))
     }
 
+    @Test func settingsViewRenders() {
+        let (preferences, _) = makeModels()
+        render(SettingsView().environment(preferences))
+    }
+
     @Test func welcomeViewRenders() {
         let (preferences, _) = makeModels()
         render(WelcomeView().environment(preferences))

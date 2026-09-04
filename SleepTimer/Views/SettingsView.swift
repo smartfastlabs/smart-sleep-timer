@@ -1,54 +1,56 @@
 import SwiftUI
 import os
 
-/// Bedtime, login item, and quit controls shown below the timer in the popover.
+/// The Settings window (Command-comma).
 struct SettingsView: View {
     @Environment(Preferences.self) private var preferences
     @State private var launchAtLogin = LoginItem.isEnabled
 
+    static let websiteURL = URL(string: "https://smartfast.com")!
+
     var body: some View {
         @Bindable var preferences = preferences
 
-        VStack {
-            VStack {
-                HStack {
-                    Toggle("Bedtime", isOn: $preferences.bedtimeEnabled)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+        Form {
+            Section {
+                Toggle("Sleep at bedtime", isOn: $preferences.bedtimeEnabled)
+                DatePicker("Bedtime", selection: bedtimeBinding, displayedComponents: .hourAndMinute)
+                    .disabled(!preferences.bedtimeEnabled)
+            } header: {
+                Text("Bedtime")
+            } footer: {
+                Text("Your Mac goes to sleep at bedtime unless you are actively using it.")
+            }
 
-                    if preferences.bedtimeEnabled {
-                        Picker("", selection: $preferences.bedtimeHour) {
-                            ForEach(0..<24, id: \.self) { hour in
-                                Text(String(hour)).tag(hour)
-                            }
-                        }
-                        Picker(":", selection: $preferences.bedtimeMinute) {
-                            ForEach(0..<60, id: \.self) { minute in
-                                Text(String(format: "%02d", minute)).tag(minute)
-                            }
-                        }
-                    }
-                }
-
-                Toggle("Run on Start Up", isOn: $launchAtLogin)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            Section("General") {
+                Toggle("Open at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in
                         setLaunchAtLogin(enabled)
                     }
-
-                Button {
-                    NSApplication.shared.terminate(nil)
-                } label: {
-                    Text("Quit").frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.red)
             }
-            .padding()
-            .overlay(RoundedRectangle(cornerRadius: 5).stroke(.gray, lineWidth: 1))
 
-            Text("[Smartfast Labs](https://smartfast.com)")
+            Section("About") {
+                LabeledContent("Version", value: Self.versionString)
+                Link("Smartfast Labs", destination: Self.websiteURL)
+            }
         }
-        .padding([.bottom, .leading, .trailing], 10)
+        .formStyle(.grouped)
+        .frame(width: 380)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var bedtimeBinding: Binding<Date> {
+        Binding(
+            get: { preferences.bedtime.date(on: .now) ?? .now },
+            set: { preferences.bedtime = TimeOfDay(from: $0) }
+        )
+    }
+
+    private static var versionString: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "\(version) (\(build))"
     }
 
     private func setLaunchAtLogin(_ enabled: Bool) {

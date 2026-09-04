@@ -23,6 +23,11 @@ struct SleepTimerApp: App {
         }
         .menuBarExtraStyle(.window)
 
+        Settings {
+            SettingsView()
+                .environment(preferences)
+        }
+
         Window("Welcome to Smart Sleep Timer", id: "welcome") {
             WelcomeView()
                 .environment(preferences)
