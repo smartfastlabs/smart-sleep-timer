@@ -3,15 +3,25 @@
 macOS menu bar app (SwiftUI, sandboxed, Mac App Store) that puts the Mac to sleep after a countdown or at a configured bedtime.
 
 ## Layout
-- `SleepTimer/` — all app sources. The Xcode project uses a synchronized folder, so any file added here is compiled automatically. No project-file edits needed.
-- `SleepTimer.xcodeproj` — single target `SleepTimer`, scheme `SleepTimer`.
+- `SleepTimer/` — app sources, grouped as `App/`, `Models/`, `Services/`, `Views/`, `Support/`. The Xcode project uses synchronized folders, so any file added under `SleepTimer/` or `SleepTimerTests/` is compiled automatically. No project-file edits needed.
+- `SleepTimerTests/` — Swift Testing unit tests, hosted in the app.
+- `SleepTimer.xcodeproj` — targets `SleepTimer` and `SleepTimerTests`, scheme `SleepTimer`.
 - Version lives only in build settings: `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.pbxproj`.
+
+## Architecture
+- `Preferences` (`@Observable`) persists settings to UserDefaults; key names are frozen for backward compatibility.
+- `SleepScheduler` (`@Observable`, main actor) owns the countdown and bedtime logic. Its clock, sleeper, and activity monitor are injected so tests drive it with `tick()`.
+- `SystemActivityMonitor` reads idle time from `CGEventSource`; `PMSetSleeper` runs `pmset sleepnow`; `LoginItem` wraps `SMAppService`.
+- Views get models via `.environment(...)`, except `MenuBarIcon`, which takes the scheduler directly because scene environment does not reach a `MenuBarExtra` label.
 
 ## Build and test
 ```bash
 xcodebuild -project SleepTimer.xcodeproj -scheme SleepTimer -configuration Debug CODE_SIGNING_ALLOWED=NO build 2>&1 | grep -E 'error:|warning:|BUILD'
 ```
-Run the build after every meaningful change. Warnings count as failures; keep the build clean.
+```bash
+xcodebuild -project SleepTimer.xcodeproj -scheme SleepTimer -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO test 2>&1 | grep -E 'error:|Test case|TEST'
+```
+Run the build after every meaningful change and the tests before every commit. Warnings count as failures; keep the build clean. Note that `xcodebuild test` launches the real app as the test host, so a menu bar icon appears briefly.
 
 ## Conventions
 - Minimum macOS 15. Use `#available(macOS 26, *)` for newer polish.

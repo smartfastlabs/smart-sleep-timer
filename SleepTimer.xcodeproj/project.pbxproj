@@ -6,11 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		BFEEEFE42C78B5E700D35F92 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = BFEEEFE32C78B5E700D35F92 /* LaunchAtLogin */; };
-/* End PBXBuildFile section */
+/* Begin PBXContainerItemProxy section */
+		BFA000000000000000000B0A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFFBD87D2C75E53F00D4F3AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BFFBD8842C75E53F00D4F3AF;
+			remoteInfo = SleepTimer;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BFA000000000000000000B02 /* SleepTimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SleepTimerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -25,6 +32,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		BFA000000000000000000B0B /* SleepTimerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SleepTimerTests;
+			sourceTree = "<group>";
+		};
 		BFFBD8872C75E53F00D4F3AF /* SleepTimer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -36,11 +48,17 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BFA000000000000000000B07 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BFFBD8822C75E53F00D4F3AF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFEEEFE42C78B5E700D35F92 /* LaunchAtLogin in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				BFFBD8872C75E53F00D4F3AF /* SleepTimer */,
+				BFA000000000000000000B0B /* SleepTimerTests */,
 				BFFBD8862C75E53F00D4F3AF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */,
+				BFA000000000000000000B02 /* SleepTimerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,6 +86,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BFA000000000000000000B01 /* SleepTimerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BFA000000000000000000B03 /* Build configuration list for PBXNativeTarget "SleepTimerTests" */;
+			buildPhases = (
+				BFA000000000000000000B06 /* Sources */,
+				BFA000000000000000000B07 /* Frameworks */,
+				BFA000000000000000000B08 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BFA000000000000000000B09 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BFA000000000000000000B0B /* SleepTimerTests */,
+			);
+			name = SleepTimerTests;
+			packageProductDependencies = (
+			);
+			productName = SleepTimerTests;
+			productReference = BFA000000000000000000B02 /* SleepTimerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		BFFBD8842C75E53F00D4F3AF /* SleepTimer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BFFBD8942C75E54000D4F3AF /* Build configuration list for PBXNativeTarget "SleepTimer" */;
@@ -83,7 +126,6 @@
 			);
 			name = SleepTimer;
 			packageProductDependencies = (
-				BFEEEFE32C78B5E700D35F92 /* LaunchAtLogin */,
 			);
 			productName = SleepTimer;
 			productReference = BFFBD8852C75E53F00D4F3AF /* SleepTimer.app */;
@@ -99,6 +141,10 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					BFA000000000000000000B01 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = BFFBD8842C75E53F00D4F3AF;
+					};
 					BFFBD8842C75E53F00D4F3AF = {
 						CreatedOnToolsVersion = 15.4;
 					};
@@ -114,7 +160,6 @@
 			mainGroup = BFFBD87C2C75E53F00D4F3AF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				BFEEEFE22C78B5E700D35F92 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BFFBD8862C75E53F00D4F3AF /* Products */;
@@ -122,11 +167,19 @@
 			projectRoot = "";
 			targets = (
 				BFFBD8842C75E53F00D4F3AF /* SleepTimer */,
+				BFA000000000000000000B01 /* SleepTimerTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BFA000000000000000000B08 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BFFBD8832C75E53F00D4F3AF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,6 +190,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BFA000000000000000000B06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BFFBD8812C75E53F00D4F3AF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -146,7 +206,49 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		BFA000000000000000000B09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BFFBD8842C75E53F00D4F3AF /* SleepTimer */;
+			targetProxy = BFA000000000000000000B0A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		BFA000000000000000000B04 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9JAT4CEKDU;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = smartfastlabs.SleepTimerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SleepTimer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SleepTimer";
+			};
+			name = Debug;
+		};
+		BFA000000000000000000B05 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9JAT4CEKDU;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = smartfastlabs.SleepTimerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SleepTimer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SleepTimer";
+			};
+			name = Release;
+		};
 		BFFBD8922C75E54000D4F3AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -207,7 +309,11 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -263,7 +369,11 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -296,7 +406,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = smartfastlabs.SleepTimer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -329,13 +438,21 @@
 				PRODUCT_BUNDLE_IDENTIFIER = smartfastlabs.SleepTimer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BFA000000000000000000B03 /* Build configuration list for PBXNativeTarget "SleepTimerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFA000000000000000000B04 /* Debug */,
+				BFA000000000000000000B05 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BFFBD8802C75E53F00D4F3AF /* Build configuration list for PBXProject "SleepTimer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -355,25 +472,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		BFEEEFE22C78B5E700D35F92 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Legacy";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		BFEEEFE32C78B5E700D35F92 /* LaunchAtLogin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BFEEEFE22C78B5E700D35F92 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */;
-			productName = LaunchAtLogin;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BFFBD87D2C75E53F00D4F3AF /* Project object */;
 }
