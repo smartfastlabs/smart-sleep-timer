@@ -11,7 +11,9 @@ struct WelcomeView: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Image(nsImage: NSApp.applicationIconImage)
+                // Read from the bundle rather than NSApp.applicationIconImage, which can serve a
+                // stale cached icon after the artwork changes.
+                Image(nsImage: Bundle.main.image(forResource: "AppIcon") ?? NSApp.applicationIconImage)
                     .resizable()
                     .frame(width: 96, height: 96)
                 Text("Smart Sleep Timer")
@@ -32,8 +34,7 @@ struct WelcomeView: View {
 
             HStack(spacing: 6) {
                 Text("Look for")
-                Image("StatusBarIcon")
-                    .renderingMode(.template)
+                Image(MenuBarIcon.assetName(for: .normal))
                     .resizable()
                     .scaledToFit()
                     .frame(height: 16)

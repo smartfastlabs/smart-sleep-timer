@@ -15,13 +15,17 @@ struct MenuBarIcon: View {
 
     private static let pointHeight: CGFloat = 18
 
-    private static func image(for status: SleepScheduler.Status) -> NSImage {
-        let name = switch status {
-        case .normal: "StatusBarIcon"
-        case .pastBedtime: "StatusBarAlertIcon"
-        case .imminent: "StatusBarDangerIcon"
+    /// Asset catalog names; each is a vector template image.
+    static func assetName(for status: SleepScheduler.Status) -> String {
+        switch status {
+        case .normal: "MenuBarIcon"
+        case .pastBedtime: "MenuBarIconPastBedtime"
+        case .imminent: "MenuBarIconImminent"
         }
-        guard let source = NSImage(named: name), let image = source.copy() as? NSImage else {
+    }
+
+    private static func image(for status: SleepScheduler.Status) -> NSImage {
+        guard let source = NSImage(named: assetName(for: status)), let image = source.copy() as? NSImage else {
             return NSImage(systemSymbolName: "moon.zzz", accessibilityDescription: "Sleep Timer")!
         }
         let ratio = image.size.width / image.size.height
