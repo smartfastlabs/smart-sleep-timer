@@ -14,14 +14,16 @@ struct SettingsView: View {
         Form {
             Section {
                 Toggle("Sleep at bedtime", isOn: $preferences.bedtimeEnabled)
-                DatePicker("Bedtime", selection: binding(for: \.bedtime), displayedComponents: .hourAndMinute)
-                DatePicker("Wake time", selection: binding(for: \.wakeTime), displayedComponents: .hourAndMinute)
+                Group {
+                    DatePicker("Bedtime", selection: binding(for: \.bedtime), displayedComponents: .hourAndMinute)
+                    DatePicker("Wake time", selection: binding(for: \.wakeTime), displayedComponents: .hourAndMinute)
+                }
+                .disabled(!preferences.bedtimeEnabled)
             } header: {
                 Text("Bedtime")
             } footer: {
                 Text("At bedtime your Mac goes to sleep, or shows a countdown if you're using it. Bedtime lasts until wake time.")
             }
-            .disabled(!preferences.bedtimeEnabled)
 
             Section {
                 Toggle("Lights Out mode", isOn: $preferences.lightsOutEnabled)
@@ -63,6 +65,7 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .frame(width: 420)
         .fixedSize(horizontal: false, vertical: true)
+        .onDisappear { NSApp.returnFocusIfNoWindowsRemain() }
     }
 
     private func binding(for keyPath: ReferenceWritableKeyPath<Preferences, TimeOfDay>) -> Binding<Date> {

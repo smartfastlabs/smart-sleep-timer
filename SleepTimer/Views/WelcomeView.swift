@@ -24,7 +24,7 @@ struct WelcomeView: View {
             }
 
             VStack(alignment: .leading, spacing: 14) {
-                feature("timer", "Quick timers", "Pick 5 minutes to 2 hours from the menu bar.")
+                feature("timer", "Quick timers", "Pick 15 minutes to 2 hours from the menu bar.")
                 feature("bed.double", "Bedtime", "Sleeps at the same time every night.")
                 feature("hand.raised", "Stays out of your way", "Waits if you're still using your Mac.")
             }
@@ -64,6 +64,7 @@ struct WelcomeView: View {
         .frame(width: 440)
         .fixedSize(horizontal: false, vertical: true)
         .onAppear { NSApp.activate() }
+        .onDisappear { NSApp.returnFocusIfNoWindowsRemain() }
     }
 
     private func feature(_ symbol: String, _ title: String, _ detail: String) -> some View {

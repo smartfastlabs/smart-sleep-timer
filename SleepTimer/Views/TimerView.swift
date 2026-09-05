@@ -33,7 +33,7 @@ struct TimerView: View {
 
             Spacer(minLength: 0)
 
-            if scheduler.timerEnd != nil {
+            if scheduler.countdown != nil {
                 Button("Cancel") {
                     scheduler.cancelTimer()
                 }
@@ -43,7 +43,7 @@ struct TimerView: View {
     }
 
     private var headerSymbol: String {
-        if scheduler.timerEnd != nil { return "moon.zzz.fill" }
+        if scheduler.countdown != nil { return "moon.zzz.fill" }
         if scheduler.lightsOutEnd != nil { return "lightbulb.slash.fill" }
         if scheduler.isPastBedtime { return "bed.double.fill" }
         return scheduler.nextSleepTime == nil ? "moon.zzz" : "bed.double"
@@ -58,7 +58,7 @@ struct TimerView: View {
     }
 
     private var headerTitle: String {
-        if let end = scheduler.timerEnd ?? scheduler.lightsOutEnd {
+        if let end = scheduler.countdown?.end ?? scheduler.lightsOutEnd {
             return Formatting.countdown(from: scheduler.now, to: end)
         }
         if scheduler.isPastBedtime {
@@ -71,7 +71,7 @@ struct TimerView: View {
     }
 
     private var headerSubtitle: String {
-        if let end = scheduler.timerEnd {
+        if let end = scheduler.countdown?.end {
             return "Sleeps at \(Formatting.wallClock(end))"
         }
         if let end = scheduler.lightsOutEnd {
@@ -95,7 +95,7 @@ struct TimerView: View {
             ForEach(SleepScheduler.quickPickMinutes, id: \.self) { minutes in
                 QuickPickButton(
                     title: Formatting.quickPick(minutes: minutes),
-                    isActive: minutes == scheduler.activeQuickPick
+                    isActive: minutes == scheduler.countdown?.quickPick
                 ) {
                     scheduler.startTimer(minutes: minutes)
                 }

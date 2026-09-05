@@ -19,7 +19,6 @@ struct FormattingTests {
     }
 
     @Test func quickPickLabels() {
-        #expect(Formatting.quickPick(minutes: 0) == "Off")
         #expect(Formatting.quickPick(minutes: 15) == "15m")
         #expect(Formatting.quickPick(minutes: 120) == "2h")
     }

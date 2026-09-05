@@ -13,24 +13,24 @@ struct SleepSchedulerTests {
         harness.scheduler.startTimer(minutes: 5)
 
         #expect(harness.scheduler.nextSleepTime == evening.addingTimeInterval(300))
-        #expect(harness.scheduler.activeQuickPick == 5)
+        #expect(harness.scheduler.countdown?.quickPick == 5)
 
         harness.advance(seconds: 299)
         #expect(harness.sleepRequests == 0)
 
         harness.advance(seconds: 2)
         #expect(harness.sleepRequests == 1)
-        #expect(harness.scheduler.timerEnd == nil)
-        #expect(harness.scheduler.activeQuickPick == nil)
+        #expect(harness.scheduler.countdown?.end == nil)
+        #expect(harness.scheduler.countdown?.quickPick == nil)
     }
 
-    @Test func zeroMinutesCancelsTimer() {
+    @Test func cancelClearsCountdown() {
         let harness = SchedulerHarness()
         harness.scheduler.startTimer(minutes: 30)
         harness.scheduler.cancelTimer()
 
         #expect(harness.scheduler.nextSleepTime == nil)
-        #expect(harness.scheduler.activeQuickPick == nil)
+        #expect(harness.scheduler.countdown?.quickPick == nil)
     }
 
     // MARK: Countdown prompt
@@ -43,7 +43,7 @@ struct SleepSchedulerTests {
         harness.advance(seconds: 61)
         #expect(harness.sleepRequests == 0)
         #expect(harness.scheduler.pendingSleep == SleepPrompt(reason: .timer, deadline: harness.now.addingTimeInterval(10)))
-        #expect(harness.scheduler.timerEnd == nil)
+        #expect(harness.scheduler.countdown?.end == nil)
 
         harness.advance(seconds: 9)
         #expect(harness.sleepRequests == 0)
@@ -84,8 +84,8 @@ struct SleepSchedulerTests {
 
         harness.scheduler.snooze(minutes: minutes)
         #expect(harness.scheduler.pendingSleep == nil)
-        #expect(harness.scheduler.timerEnd == harness.now.addingTimeInterval(TimeInterval(minutes * 60)))
-        #expect(harness.scheduler.activeQuickPick == nil)
+        #expect(harness.scheduler.countdown?.end == harness.now.addingTimeInterval(TimeInterval(minutes * 60)))
+        #expect(harness.scheduler.countdown?.quickPick == nil)
     }
 
     // MARK: Off tonight
@@ -161,29 +161,6 @@ struct SleepSchedulerTests {
         #expect(!harness.scheduler.isOffTonight)
     }
 
-    @Test func dismissingPromptCancelsSleep() {
-        let harness = SchedulerHarness()
-        harness.idleSeconds = 10
-        harness.scheduler.startTimer(minutes: 1)
-        harness.advance(seconds: 61)
-
-        harness.scheduler.dismissPrompt()
-        harness.advance(seconds: 30)
-        #expect(harness.sleepRequests == 0)
-        #expect(harness.scheduler.nextSleepTime == nil)
-    }
-
-    @Test func sleepNowSkipsCountdown() {
-        let harness = SchedulerHarness()
-        harness.idleSeconds = 10
-        harness.scheduler.startTimer(minutes: 1)
-        harness.advance(seconds: 61)
-
-        harness.scheduler.sleepNow()
-        #expect(harness.sleepRequests == 1)
-        #expect(harness.scheduler.pendingSleep == nil)
-    }
-
     @Test func startingTimerDismissesPrompt() {
         let harness = SchedulerHarness()
         harness.idleSeconds = 10
@@ -192,7 +169,7 @@ struct SleepSchedulerTests {
 
         harness.scheduler.startTimer(minutes: 15)
         #expect(harness.scheduler.pendingSleep == nil)
-        #expect(harness.scheduler.timerEnd == harness.now.addingTimeInterval(900))
+        #expect(harness.scheduler.countdown?.end == harness.now.addingTimeInterval(900))
     }
 
     @Test func wakeClearsPromptAndExpiredTimer() {
@@ -206,7 +183,7 @@ struct SleepSchedulerTests {
         harness.scheduler.noteWake()
         harness.scheduler.tick()
         #expect(harness.scheduler.pendingSleep == nil)
-        #expect(harness.scheduler.timerEnd == nil)
+        #expect(harness.scheduler.countdown?.end == nil)
         #expect(harness.sleepRequests == 0)
     }
 
@@ -270,7 +247,7 @@ struct SleepSchedulerTests {
 
         harness.advance(minutes: 61)
         #expect(harness.sleepRequests == 0)
-        #expect(harness.scheduler.timerEnd != nil)
+        #expect(harness.scheduler.countdown?.end != nil)
     }
 
     @Test func launchingInsideWindowDoesNotSleepImmediately() {
@@ -338,9 +315,9 @@ struct SleepSchedulerTests {
         #expect(harness.scheduler.pendingSleep?.reason == .lightsOut)
 
         harness.scheduler.snooze(minutes: 10)
-        #expect(harness.scheduler.timerEnd == harness.now.addingTimeInterval(600))
+        #expect(harness.scheduler.countdown?.end == harness.now.addingTimeInterval(600))
         harness.advance(minutes: 10)
-        #expect(harness.scheduler.pendingSleep?.reason == .timer)
+        #expect(harness.scheduler.pendingSleep?.reason == .lightsOut)
     }
 
     @Test func lightsOutStopsWhenWindowEnds() {
@@ -382,6 +359,60 @@ struct SleepSchedulerTests {
         harness.scheduler.noteWake()
         harness.scheduler.tick()
         #expect(harness.scheduler.lightsOutEnd == harness.now.addingTimeInterval(15 * 60))
+    }
+
+    @Test func snoozeKeepsTheOriginalReason() {
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.idleSeconds = 3
+        harness.advance(minutes: 61)
+        #expect(harness.scheduler.pendingSleep?.reason == .bedtime)
+
+        harness.scheduler.snooze(minutes: 15)
+        #expect(harness.scheduler.countdown?.reason == .bedtime)
+        #expect(harness.scheduler.countdown?.quickPick == nil)
+
+        harness.advance(minutes: 15)
+        #expect(harness.scheduler.pendingSleep?.reason == .bedtime)
+    }
+
+    // MARK: Waking inside the window
+
+    @Test func wakingInsideWindowDoesNotFireBedtime() {
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        // Lid closed at 9 PM, opened at 11 PM.
+        harness.now = harness.now.addingTimeInterval(2 * 3600)
+        harness.scheduler.noteWake()
+        harness.advance(seconds: 1)
+
+        #expect(harness.sleepRequests == 0)
+        #expect(harness.scheduler.pendingSleep == nil)
+        #expect(harness.scheduler.nextSleepTime == nil)
+        #expect(harness.scheduler.status == .pastBedtime)
+    }
+
+    @Test func wakingInsideWindowArmsLightsOut() {
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.preferences.lightsOutEnabled = true
+        harness.preferences.lightsOutMinutes = 15
+        harness.now = harness.now.addingTimeInterval(2 * 3600)
+        harness.scheduler.noteWake()
+        harness.advance(seconds: 1)
+
+        #expect(harness.scheduler.pendingSleep == nil)
+        #expect(harness.scheduler.lightsOutEnd == harness.now.addingTimeInterval(15 * 60))
+    }
+
+    @Test func sleepingInsideWindowCountsAsBedtime() {
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.scheduler.startTimer(minutes: 90)  // 9:00 PM timer ends 10:30 PM, inside the window
+        harness.advance(minutes: 91)
+        #expect(harness.sleepRequests == 1)
+
+        harness.now = harness.now.addingTimeInterval(30 * 60)
+        harness.scheduler.noteWake()
+        harness.advance(seconds: 1)
+        #expect(harness.sleepRequests == 1)
+        #expect(harness.scheduler.pendingSleep == nil)
     }
 
     // MARK: Status

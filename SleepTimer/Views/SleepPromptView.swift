@@ -18,7 +18,6 @@ struct SleepPromptView: View {
 /// The message and choices in the middle of the overlay.
 struct SleepPromptCard: View {
     @Environment(SleepScheduler.self) private var scheduler
-    @Environment(Preferences.self) private var preferences
 
     var body: some View {
         let remaining = remainingSeconds

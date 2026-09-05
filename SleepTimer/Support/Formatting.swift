@@ -17,12 +17,8 @@ enum Formatting {
         date.formatted(date: .omitted, time: .shortened)
     }
 
-    /// Label for a quick-pick timer button: "Off", "15m", "2h".
+    /// Label for a quick-pick timer button: "15m", "2h".
     static func quickPick(minutes: Int) -> String {
-        switch minutes {
-        case 0: "Off"
-        case ..<60: "\(minutes)m"
-        default: "\(minutes / 60)h"
-        }
+        minutes < 60 ? "\(minutes)m" : "\(minutes / 60)h"
     }
 }

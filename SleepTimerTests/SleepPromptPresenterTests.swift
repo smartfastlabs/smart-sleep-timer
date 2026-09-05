@@ -28,17 +28,16 @@ struct SleepPromptPresenterTests {
         }
         #expect(presenter.isShowingWindow, "after ticking, frame \(String(describing: presenter.windowFrame))")
 
-        harness.scheduler.dismissPrompt()
+        harness.scheduler.snooze(minutes: 15)
         try await settle()
         #expect(!presenter.isShowingWindow, "after dismiss")
 
         // Showing again reuses the window without issue.
-        harness.scheduler.startTimer(minutes: 1)
-        harness.advance(seconds: 61)
+        harness.advance(minutes: 15)
         try await settle()
         #expect(presenter.isShowingWindow, "second show, frame \(String(describing: presenter.windowFrame))")
 
-        harness.scheduler.dismissPrompt()
+        harness.scheduler.snooze(minutes: 15)
         try await settle()
         #expect(!presenter.isShowingWindow, "after second dismiss")
     }

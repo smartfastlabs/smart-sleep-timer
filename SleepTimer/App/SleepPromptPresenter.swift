@@ -16,6 +16,8 @@ final class SleepPromptPresenter {
     private let scheduler: SleepScheduler
     private let preferences: Preferences
     private var window: PromptWindow?
+    /// The app that was frontmost before the overlay took over, so focus can go back.
+    private var previousApp: NSRunningApplication?
 
     var isShowingWindow: Bool {
         window?.isVisible ?? false
@@ -56,6 +58,7 @@ final class SleepPromptPresenter {
         if let screen {
             window.setFrame(screen.frame, display: false)
         }
+        previousApp = NSWorkspace.shared.frontmostApplication
         NSApp.activate()
         window.makeKeyAndOrderFront(nil)
         Log.app.info("Sleep prompt shown")
@@ -64,6 +67,8 @@ final class SleepPromptPresenter {
     private func hide() {
         guard let window, window.isVisible else { return }
         window.orderOut(nil)
+        NSApp.returnFocus(to: previousApp)
+        previousApp = nil
         Log.app.info("Sleep prompt hidden")
     }
 
