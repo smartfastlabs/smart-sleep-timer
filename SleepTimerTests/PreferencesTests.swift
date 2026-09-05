@@ -16,7 +16,6 @@ struct PreferencesTests {
         #expect(!preferences.lightsOutEnabled)
         #expect(preferences.lightsOutMinutes == 15)
         #expect(preferences.idleThresholdSeconds == 120)
-        #expect(preferences.snoozeMinutes == 10)
         #expect(!preferences.hasCompletedWelcome)
     }
 
@@ -29,7 +28,6 @@ struct PreferencesTests {
         first.lightsOutEnabled = true
         first.lightsOutMinutes = 20
         first.idleThresholdSeconds = 60
-        first.snoozeMinutes = 5
         first.hasCompletedWelcome = true
 
         let second = Preferences(defaults: defaults)
@@ -39,7 +37,6 @@ struct PreferencesTests {
         #expect(second.lightsOutEnabled)
         #expect(second.lightsOutMinutes == 20)
         #expect(second.idleThresholdSeconds == 60)
-        #expect(second.snoozeMinutes == 5)
         #expect(second.hasCompletedWelcome)
     }
 

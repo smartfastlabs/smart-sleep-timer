@@ -37,20 +37,15 @@ struct SettingsView: View {
             .disabled(!preferences.bedtimeEnabled)
 
             Section {
-                Picker("Wait for inactivity", selection: $preferences.idleThresholdSeconds) {
+                Picker("Ask if I've used my Mac within", selection: $preferences.idleThresholdSeconds) {
                     ForEach(Preferences.idleThresholdOptions, id: \.self) { seconds in
                         Text(Self.describe(seconds: seconds)).tag(seconds)
-                    }
-                }
-                Picker("Snooze", selection: $preferences.snoozeMinutes) {
-                    ForEach(Preferences.snoozeMinuteOptions, id: \.self) { minutes in
-                        Text("\(minutes) minutes").tag(minutes)
                     }
                 }
             } header: {
                 Text("Going to sleep")
             } footer: {
-                Text("If you've used your Mac within this time when a timer ends, you get a \(Int(SleepScheduler.promptDuration))-second countdown instead of sleeping right away.")
+                Text("When a timer ends, your Mac sleeps right away if you've been idle longer than this. Otherwise you get a \(Int(SleepScheduler.promptDuration))-second countdown with options to snooze.")
             }
 
             Section("General") {

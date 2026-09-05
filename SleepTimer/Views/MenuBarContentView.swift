@@ -48,6 +48,13 @@ private struct BedtimeRow: View {
 
             Spacer()
 
+            if scheduler.isOffTonight {
+                Button("Resume") {
+                    scheduler.resumeTonight()
+                }
+                .controlSize(.small)
+            }
+
             Toggle("Bedtime", isOn: $preferences.bedtimeEnabled)
                 .toggleStyle(.switch)
                 .controlSize(.small)
@@ -57,6 +64,9 @@ private struct BedtimeRow: View {
 
     private var bedtimeDescription: String {
         guard preferences.bedtimeEnabled else { return "Off" }
+        if let until = scheduler.disabledUntil, scheduler.isOffTonight {
+            return "Off tonight until \(Formatting.wallClock(until))"
+        }
         if let window = scheduler.currentBedtimeWindow {
             let end = Formatting.wallClock(window.end)
             return scheduler.isLightsOut ? "Lights Out until \(end)" : "Until \(end)"

@@ -75,17 +75,90 @@ struct SleepSchedulerTests {
         #expect(harness.scheduler.pendingSleep?.reason == .timer)
     }
 
-    @Test func snoozeDismissesPromptAndStartsTimer() {
+    @Test(arguments: [5, 10, 30])
+    func snoozeDismissesPromptAndStartsTimer(minutes: Int) {
         let harness = SchedulerHarness()
         harness.idleSeconds = 10
-        harness.preferences.snoozeMinutes = 10
         harness.scheduler.startTimer(minutes: 1)
         harness.advance(seconds: 61)
 
-        harness.scheduler.snooze()
+        harness.scheduler.snooze(minutes: minutes)
         #expect(harness.scheduler.pendingSleep == nil)
-        #expect(harness.scheduler.timerEnd == harness.now.addingTimeInterval(600))
+        #expect(harness.scheduler.timerEnd == harness.now.addingTimeInterval(TimeInterval(minutes * 60)))
         #expect(harness.scheduler.activeQuickPick == nil)
+    }
+
+    // MARK: Off tonight
+
+    @Test func offTonightSuspendsLightsOutUntilWakeTime() {
+        let lateNight = evening.addingTimeInterval(2 * 3600)
+        let harness = SchedulerHarness(now: lateNight, bedtime: TimeOfDay(hour: 22, minute: 0), wakeTime: TimeOfDay(hour: 6, minute: 0))
+        harness.preferences.lightsOutEnabled = true
+        harness.preferences.lightsOutMinutes = 5
+        harness.idleSeconds = 3
+        harness.advance(seconds: 1)
+        harness.advance(minutes: 5)
+        #expect(harness.scheduler.pendingSleep?.reason == .lightsOut)
+
+        harness.scheduler.disableTonight()
+        #expect(harness.scheduler.pendingSleep == nil)
+        #expect(harness.scheduler.isOffTonight)
+        #expect(!harness.scheduler.isPastBedtime)
+        #expect(harness.scheduler.status == .normal)
+
+        harness.advance(minutes: 6 * 60)  // 5:05 AM
+        #expect(harness.sleepRequests == 0)
+        #expect(harness.scheduler.lightsOutEnd == nil)
+
+        harness.advance(minutes: 60)  // 6:05 AM, window over
+        #expect(!harness.scheduler.isOffTonight)
+        #expect(harness.scheduler.nextSleepTime == harness.date(hour: 22))
+
+        harness.advance(minutes: 16 * 60)  // 10:05 PM next night
+        #expect(harness.scheduler.isPastBedtime)
+        #expect(harness.scheduler.pendingSleep?.reason == .bedtime)
+    }
+
+    @Test func offTonightBeforeBedtimeSkipsTonightsWindow() {
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.idleSeconds = 3
+        harness.scheduler.startTimer(minutes: 1)
+        harness.advance(seconds: 61)
+        #expect(harness.scheduler.pendingSleep?.reason == .timer)
+
+        harness.scheduler.disableTonight()
+        let tomorrow = SchedulerHarness.calendar.date(byAdding: .day, value: 1, to: harness.date(hour: 22))
+        #expect(harness.scheduler.nextSleepTime == tomorrow)
+
+        harness.advance(minutes: 60)  // 10:01 PM
+        #expect(harness.sleepRequests == 0)
+        #expect(harness.scheduler.pendingSleep == nil)
+        #expect(!harness.scheduler.isPastBedtime)
+    }
+
+    @Test func resumeTonightRestoresLightsOutWithoutRefiringBedtime() {
+        let lateNight = evening.addingTimeInterval(2 * 3600)
+        let harness = SchedulerHarness(now: lateNight, bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.preferences.lightsOutEnabled = true
+        harness.advance(seconds: 1)
+        harness.scheduler.disableTonight()
+
+        harness.scheduler.resumeTonight()
+        harness.advance(seconds: 1)
+        #expect(harness.scheduler.isPastBedtime)
+        #expect(harness.sleepRequests == 0)
+        #expect(harness.scheduler.lightsOutEnd != nil)
+    }
+
+    @Test func offTonightWithoutBedtimeDoesNothing() {
+        let harness = SchedulerHarness()
+        harness.idleSeconds = 3
+        harness.scheduler.startTimer(minutes: 1)
+        harness.advance(seconds: 61)
+
+        harness.scheduler.disableTonight()
+        #expect(harness.scheduler.pendingSleep == nil)
+        #expect(!harness.scheduler.isOffTonight)
     }
 
     @Test func dismissingPromptCancelsSleep() {
@@ -264,7 +337,7 @@ struct SleepSchedulerTests {
         harness.advance(minutes: 5)
         #expect(harness.scheduler.pendingSleep?.reason == .lightsOut)
 
-        harness.scheduler.snooze()
+        harness.scheduler.snooze(minutes: 10)
         #expect(harness.scheduler.timerEnd == harness.now.addingTimeInterval(600))
         harness.advance(minutes: 10)
         #expect(harness.scheduler.pendingSleep?.reason == .timer)

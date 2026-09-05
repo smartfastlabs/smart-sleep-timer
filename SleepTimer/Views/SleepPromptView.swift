@@ -5,7 +5,7 @@ struct SleepPromptView: View {
     @Environment(SleepScheduler.self) private var scheduler
     @Environment(Preferences.self) private var preferences
 
-    static let width: CGFloat = 400
+    static let width: CGFloat = 420
 
     var body: some View {
         let remaining = remainingSeconds
@@ -36,21 +36,39 @@ struct SleepPromptView: View {
             Text("Your Mac will sleep in ^[\(remaining) second](inflect: true).")
                 .foregroundStyle(.secondary)
 
-            HStack {
-                Button("Cancel") {
-                    scheduler.dismissPrompt()
+            VStack(spacing: 10) {
+                HStack(spacing: 8) {
+                    Text("Snooze")
+                        .foregroundStyle(.secondary)
+                        .frame(width: 60, alignment: .leading)
+                    ForEach(SleepScheduler.snoozeMinutes, id: \.self) { minutes in
+                        Button {
+                            scheduler.snooze(minutes: minutes)
+                        } label: {
+                            Text("\(minutes) min").frame(maxWidth: .infinity)
+                        }
+                        .modifier(DefaultIfTen(minutes: minutes))
+                    }
                 }
-                .keyboardShortcut(.cancelAction)
 
-                Spacer()
+                HStack(spacing: 8) {
+                    Button("Cancel") {
+                        scheduler.dismissPrompt()
+                    }
+                    .keyboardShortcut(.cancelAction)
 
-                Button("Snooze \(preferences.snoozeMinutes) min") {
-                    scheduler.snooze()
-                }
-                .keyboardShortcut(.defaultAction)
+                    Spacer()
 
-                Button("Sleep Now") {
-                    scheduler.sleepNow()
+                    if preferences.bedtimeEnabled {
+                        Button("Off Tonight") {
+                            scheduler.disableTonight()
+                        }
+                        .help("No bedtime or Lights Out until \(wakeTimeDescription)")
+                    }
+
+                    Button("Sleep Now") {
+                        scheduler.sleepNow()
+                    }
                 }
             }
             .controlSize(.large)
@@ -78,6 +96,23 @@ struct SleepPromptView: View {
         case .bedtime: "Your bedtime is \(Formatting.wallClock(preferences.bedtime.date(on: scheduler.now) ?? scheduler.now))."
         case .lightsOut: "It's past your bedtime."
         case .timer, nil: "Your sleep timer has finished."
+        }
+    }
+
+    private var wakeTimeDescription: String {
+        Formatting.wallClock(preferences.wakeTime.date(on: scheduler.now) ?? scheduler.now)
+    }
+}
+
+/// Makes the 10-minute snooze the Return-key default, the safest thing a stray keystroke can do.
+private struct DefaultIfTen: ViewModifier {
+    let minutes: Int
+
+    func body(content: Content) -> some View {
+        if minutes == 10 {
+            content.keyboardShortcut(.defaultAction)
+        } else {
+            content
         }
     }
 }

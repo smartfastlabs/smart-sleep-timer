@@ -38,6 +38,7 @@ final class SleepScheduler {
     /// How long the countdown panel gives the user before sleeping.
     static let promptDuration: TimeInterval = 10
     static let quickPickMinutes = [1, 5, 15, 30, 60, 120]
+    static let snoozeMinutes = [5, 10, 30]
 
     /// The scheduler's view of the current time, refreshed every tick.
     private(set) var now: Date
@@ -49,6 +50,8 @@ final class SleepScheduler {
     private(set) var lightsOutEnd: Date?
     /// The countdown panel state, if the user is being asked before sleep.
     private(set) var pendingSleep: SleepPrompt?
+    /// While set and in the future, bedtime and Lights Out are suspended ("Off tonight").
+    private(set) var disabledUntil: Date?
 
     /// Start of the bedtime window that has already fired, so bedtime fires once per night.
     @ObservationIgnored private var handledBedtimeStart: Date?
@@ -107,10 +110,16 @@ final class SleepScheduler {
 
     // MARK: - Bedtime window
 
-    /// The bedtime window containing `now`, if bedtime is enabled and we are inside one.
-    /// Windows may cross midnight, so yesterday's window is checked as well as today's.
+    /// Whether the user chose "Off tonight" and wake time has not yet passed.
+    var isOffTonight: Bool {
+        guard let disabledUntil else { return false }
+        return now < disabledUntil
+    }
+
+    /// The bedtime window containing `now`, if bedtime is enabled, not off for tonight,
+    /// and we are inside one. Windows may cross midnight, so yesterday's is checked too.
     var currentBedtimeWindow: DateInterval? {
-        guard preferences.bedtimeEnabled else { return nil }
+        guard preferences.bedtimeEnabled, !isOffTonight else { return nil }
         for dayOffset in [0, -1] {
             guard let day = calendar.date(byAdding: .day, value: dayOffset, to: now),
                   let window = bedtimeWindow(startingOn: day) else { continue }
@@ -120,15 +129,21 @@ final class SleepScheduler {
         return nil
     }
 
-    /// The next bedtime at or after `now`, if bedtime is enabled.
-    var nextBedtime: Date? {
+    /// The next bedtime window starting at or after `now`, skipping one that is off for tonight.
+    var nextBedtimeWindow: DateInterval? {
         guard preferences.bedtimeEnabled else { return nil }
         for dayOffset in [0, 1] {
             guard let day = calendar.date(byAdding: .day, value: dayOffset, to: now),
-                  let start = preferences.bedtime.date(on: day, calendar: calendar) else { continue }
-            if start >= now { return start }
+                  let window = bedtimeWindow(startingOn: day), window.start >= now else { continue }
+            if let disabledUntil, window.start < disabledUntil { continue }
+            return window
         }
         return nil
+    }
+
+    /// The next bedtime at or after `now`, if bedtime is enabled.
+    var nextBedtime: Date? {
+        nextBedtimeWindow?.start
     }
 
     private func bedtimeWindow(startingOn day: Date) -> DateInterval? {
@@ -205,19 +220,37 @@ final class SleepScheduler {
         performSleep()
     }
 
-    /// Dismisses the countdown and comes back after the snooze interval.
-    func snooze() {
+    /// Dismisses the countdown and comes back after `minutes`.
+    func snooze(minutes: Int) {
         guard pendingSleep != nil else { return }
         pendingSleep = nil
         activeQuickPick = nil
-        timerEnd = now.addingTimeInterval(TimeInterval(preferences.snoozeMinutes * 60))
-        Log.scheduler.info("Snoozed for \(self.preferences.snoozeMinutes) minutes")
+        timerEnd = now.addingTimeInterval(TimeInterval(minutes * 60))
+        Log.scheduler.info("Snoozed for \(minutes) minutes")
     }
 
     /// Dismisses the countdown without sleeping. Inside Lights Out, the countdown re-arms.
     func dismissPrompt() {
         pendingSleep = nil
         Log.scheduler.info("Sleep prompt dismissed")
+    }
+
+    /// Dismisses the countdown and suspends bedtime and Lights Out until the current
+    /// window ends, or until tonight's window ends if bedtime has not started yet.
+    func disableTonight() {
+        pendingSleep = nil
+        lightsOutEnd = nil
+        guard let window = currentBedtimeWindow ?? nextBedtimeWindow else { return }
+        disabledUntil = window.end
+        Log.scheduler.info("Bedtime off until \(window.end, privacy: .public)")
+    }
+
+    /// Undoes "Off tonight".
+    func resumeTonight() {
+        disabledUntil = nil
+        // Do not fire bedtime retroactively for a window we are already inside.
+        handledBedtimeStart = currentBedtimeWindow?.start ?? handledBedtimeStart
+        Log.scheduler.info("Bedtime resumed")
     }
 
     // MARK: - System events
@@ -239,6 +272,10 @@ final class SleepScheduler {
     /// Advances the clock and fires whatever is due. Called every second while running.
     func tick() {
         now = clock()
+
+        if let disabledUntil, now >= disabledUntil || !preferences.bedtimeEnabled {
+            self.disabledUntil = nil
+        }
 
         if let prompt = pendingSleep {
             if now >= prompt.deadline {

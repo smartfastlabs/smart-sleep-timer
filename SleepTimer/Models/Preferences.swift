@@ -16,7 +16,6 @@ final class Preferences {
         static let lightsOutEnabled = "lightsOutEnabled"
         static let lightsOutMinutes = "lightsOutMinutes"
         static let idleThresholdSeconds = "idleThresholdSeconds"
-        static let snoozeMinutes = "snoozeMinutes"
         static let hasCompletedWelcome = "hasCompletedWelcome"
         /// Pre-1.1 key with inverted meaning; read once for migration.
         static let legacyShowWelcome = "showWelcome"
@@ -26,11 +25,9 @@ final class Preferences {
     static let defaultWakeTime = TimeOfDay(hour: 6, minute: 0)
     static let defaultLightsOutMinutes = 15
     static let defaultIdleThresholdSeconds = 120
-    static let defaultSnoozeMinutes = 10
 
     static let lightsOutMinuteOptions = [5, 10, 15, 20, 30, 45, 60]
     static let idleThresholdOptions = [30, 60, 120, 300, 600]
-    static let snoozeMinuteOptions = [5, 10, 15, 30]
 
     private let defaults: UserDefaults
 
@@ -70,10 +67,6 @@ final class Preferences {
         didSet { defaults.set(idleThresholdSeconds, forKey: Key.idleThresholdSeconds) }
     }
 
-    var snoozeMinutes: Int {
-        didSet { defaults.set(snoozeMinutes, forKey: Key.snoozeMinutes) }
-    }
-
     var hasCompletedWelcome: Bool {
         didSet { defaults.set(hasCompletedWelcome, forKey: Key.hasCompletedWelcome) }
     }
@@ -104,7 +97,6 @@ final class Preferences {
             Key.wakeMinute: Self.defaultWakeTime.minute,
             Key.lightsOutMinutes: Self.defaultLightsOutMinutes,
             Key.idleThresholdSeconds: Self.defaultIdleThresholdSeconds,
-            Key.snoozeMinutes: Self.defaultSnoozeMinutes,
         ])
 
         bedtimeEnabled = defaults.bool(forKey: Key.bedtimeEnabled)
@@ -115,7 +107,6 @@ final class Preferences {
         lightsOutEnabled = defaults.bool(forKey: Key.lightsOutEnabled)
         lightsOutMinutes = defaults.integer(forKey: Key.lightsOutMinutes)
         idleThresholdSeconds = defaults.integer(forKey: Key.idleThresholdSeconds)
-        snoozeMinutes = defaults.integer(forKey: Key.snoozeMinutes)
 
         if let completed = defaults.object(forKey: Key.hasCompletedWelcome) as? Bool {
             hasCompletedWelcome = completed
