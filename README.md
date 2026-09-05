@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/macOS-15%2B-000000?logo=apple&logoColor=white" alt="macOS 15 or later">
   <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
   <img src="https://img.shields.io/badge/SwiftUI-native-0D96F6" alt="SwiftUI">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue" alt="AGPL-3.0"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL%20%2B%20Commons%20Clause-blue" alt="AGPL with Commons Clause"></a>
 </p>
 
 **Smart Sleep Timer** is a tiny menu bar app that puts your Mac to sleep when you mean to stop. Set a timer before you start a show. Give yourself a bedtime. Turn on Lights Out and your Mac keeps going back to sleep until morning. If you're still typing when time's up, it asks first.
@@ -112,4 +112,4 @@ Issues and pull requests are welcome. If you're changing behavior, add a schedul
 
 ## License
 
-[AGPL-3.0](LICENSE). Made by [Smartfast Labs](https://smartfast.com).
+[AGPL with the Commons Clause](LICENSE): you can read, modify, and share the source, but not sell it or a product built substantially on it. Made by [Smartfast Labs](https://smartfast.com).
