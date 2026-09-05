@@ -76,6 +76,12 @@ struct SleepPromptView: View {
         .padding(28)
         .frame(width: Self.width)
         .fixedSize(horizontal: false, vertical: true)
+        // The window is borderless and transparent, so the view draws its own surface.
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(.separator, lineWidth: 1)
+        )
     }
 
     private var remainingSeconds: Int {
