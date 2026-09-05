@@ -75,7 +75,7 @@ struct SleepSchedulerTests {
         #expect(harness.scheduler.pendingSleep?.reason == .timer)
     }
 
-    @Test(arguments: [5, 10, 30])
+    @Test(arguments: [15, 30, 60])
     func snoozeDismissesPromptAndStartsTimer(minutes: Int) {
         let harness = SchedulerHarness()
         harness.idleSeconds = 10

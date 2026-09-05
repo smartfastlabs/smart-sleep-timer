@@ -1,87 +1,81 @@
 import SwiftUI
 
-/// The countdown shown when a sleep comes due while the user is active.
+/// Full-screen overlay shown when a sleep comes due while the user is active:
+/// blurs everything behind it and centers the card.
 struct SleepPromptView: View {
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .ignoresSafeArea()
+            Color.black.opacity(0.25)
+                .ignoresSafeArea()
+            SleepPromptCard()
+        }
+    }
+}
+
+/// The message and choices in the middle of the overlay.
+struct SleepPromptCard: View {
     @Environment(SleepScheduler.self) private var scheduler
     @Environment(Preferences.self) private var preferences
 
-    static let width: CGFloat = 420
-
     var body: some View {
         let remaining = remainingSeconds
-        VStack(spacing: 22) {
-            VStack(spacing: 4) {
-                Text(title)
-                    .font(.title2.weight(.semibold))
-                Text(subtitle)
-                    .foregroundStyle(.secondary)
-            }
+        VStack(spacing: 28) {
+            Image(systemName: symbol)
+                .font(.system(size: 88, weight: .medium))
+                .foregroundStyle(
+                    LinearGradient(colors: [.yellow, .orange], startPoint: .top, endPoint: .bottom)
+                )
+                .symbolEffect(.pulse, options: .repeating)
+                .frame(height: 100)
 
-            ZStack {
-                Circle()
-                    .stroke(.quaternary, lineWidth: 8)
-                Circle()
-                    .trim(from: 0, to: CGFloat(remaining) / CGFloat(SleepScheduler.promptDuration))
-                    .stroke(.tint, style: StrokeStyle(lineWidth: 8, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 1), value: remaining)
-                Text("\(remaining)")
-                    .font(.system(size: 56, weight: .bold, design: .rounded))
+            VStack(spacing: 8) {
+                Text(headline)
+                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                Text("Your Mac will sleep in ^[\(remaining) second](inflect: true).")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
                     .monospacedDigit()
                     .contentTransition(.numericText(countsDown: true))
                     .animation(.default, value: remaining)
             }
-            .frame(width: 130, height: 130)
 
-            Text("Your Mac will sleep in ^[\(remaining) second](inflect: true).")
-                .foregroundStyle(.secondary)
-
-            VStack(spacing: 10) {
-                HStack(spacing: 8) {
-                    Text("Snooze")
-                        .foregroundStyle(.secondary)
-                        .frame(width: 60, alignment: .leading)
-                    ForEach(SleepScheduler.snoozeMinutes, id: \.self) { minutes in
-                        Button {
-                            scheduler.snooze(minutes: minutes)
-                        } label: {
-                            Text("\(minutes) min").frame(maxWidth: .infinity)
-                        }
-                        .modifier(DefaultIfTen(minutes: minutes))
+            HStack(spacing: 12) {
+                ForEach(SleepScheduler.snoozeMinutes, id: \.self) { minutes in
+                    choice(Self.snoozeLabel(minutes: minutes)) {
+                        scheduler.snooze(minutes: minutes)
                     }
+                    .modifier(DefaultIfFirst(isFirst: minutes == SleepScheduler.snoozeMinutes.first))
                 }
-
-                HStack(spacing: 8) {
-                    Button("Cancel") {
-                        scheduler.dismissPrompt()
-                    }
-                    .keyboardShortcut(.cancelAction)
-
-                    Spacer()
-
-                    if preferences.bedtimeEnabled {
-                        Button("Off Tonight") {
-                            scheduler.disableTonight()
-                        }
-                        .help("No bedtime or Lights Out until \(wakeTimeDescription)")
-                    }
-
-                    Button("Sleep Now") {
-                        scheduler.sleepNow()
-                    }
+                choice("Not tonight") {
+                    scheduler.disableTonight()
                 }
             }
-            .controlSize(.large)
+            .controlSize(.extraLarge)
         }
-        .padding(28)
-        .frame(width: Self.width)
+        .padding(44)
+        .frame(width: 640)
         .fixedSize(horizontal: false, vertical: true)
-        // The window is borderless and transparent, so the view draws its own surface.
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .strokeBorder(.separator, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .strokeBorder(.white.opacity(0.12), lineWidth: 1)
         )
+        .shadow(color: .black.opacity(0.3), radius: 40, y: 20)
+    }
+
+    private func choice(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .fontWeight(.medium)
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    static func snoozeLabel(minutes: Int) -> String {
+        minutes < 60 ? "\(minutes) more minutes" : (minutes == 60 ? "1 more hour" : "\(minutes / 60) more hours")
     }
 
     private var remainingSeconds: Int {
@@ -89,33 +83,28 @@ struct SleepPromptView: View {
         return max(0, Int(deadline.timeIntervalSince(scheduler.now).rounded(.up)))
     }
 
-    private var title: String {
+    private var symbol: String {
         switch scheduler.pendingSleep?.reason {
-        case .bedtime: "It's bedtime"
+        case .lightsOut: "lightbulb.slash.fill"
+        case .bedtime, .timer, nil: "moon.stars.fill"
+        }
+    }
+
+    private var headline: String {
+        switch scheduler.pendingSleep?.reason {
+        case .bedtime: "Time for bed"
         case .lightsOut: "Lights out"
-        case .timer, nil: "Time to sleep"
+        case .timer, nil: "Time to call it a night"
         }
-    }
-
-    private var subtitle: String {
-        switch scheduler.pendingSleep?.reason {
-        case .bedtime: "Your bedtime is \(Formatting.wallClock(preferences.bedtime.date(on: scheduler.now) ?? scheduler.now))."
-        case .lightsOut: "It's past your bedtime."
-        case .timer, nil: "Your sleep timer has finished."
-        }
-    }
-
-    private var wakeTimeDescription: String {
-        Formatting.wallClock(preferences.wakeTime.date(on: scheduler.now) ?? scheduler.now)
     }
 }
 
-/// Makes the 10-minute snooze the Return-key default, the safest thing a stray keystroke can do.
-private struct DefaultIfTen: ViewModifier {
-    let minutes: Int
+/// Makes the first snooze the Return-key default, the gentlest thing a stray keystroke can do.
+private struct DefaultIfFirst: ViewModifier {
+    let isFirst: Bool
 
     func body(content: Content) -> some View {
-        if minutes == 10 {
+        if isFirst {
             content.keyboardShortcut(.defaultAction)
         } else {
             content
@@ -128,4 +117,5 @@ private struct DefaultIfTen: ViewModifier {
     SleepPromptView()
         .environment(preferences)
         .environment(SleepScheduler(preferences: preferences))
+        .frame(width: 1200, height: 800)
 }

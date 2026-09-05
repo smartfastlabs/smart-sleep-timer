@@ -72,7 +72,7 @@ struct SnapshotTests {
         harness.advance(minutes: 61)
         harness.advance(seconds: 3)
         try snapshot(
-            SleepPromptView().environment(harness.preferences).environment(harness.scheduler),
+            SleepPromptCard().environment(harness.preferences).environment(harness.scheduler),
             name: "prompt"
         )
     }

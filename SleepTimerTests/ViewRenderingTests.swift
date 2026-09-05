@@ -29,7 +29,7 @@ struct ViewRenderingTests {
         harness.idleSeconds = 1
         harness.scheduler.startTimer(minutes: 1)
         harness.advance(seconds: 61)
-        render(SleepPromptView().environment(harness.preferences).environment(harness.scheduler))
+        render(SleepPromptCard().environment(harness.preferences).environment(harness.scheduler))
     }
 
     @Test func settingsViewRenders() {

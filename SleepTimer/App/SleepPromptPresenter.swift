@@ -3,10 +3,12 @@ import Observation
 import SwiftUI
 import os
 
-/// Shows the countdown panel whenever the scheduler has a pending sleep, and hides it otherwise.
+/// Shows the full-screen countdown overlay whenever the scheduler has a pending sleep,
+/// and hides it otherwise.
 ///
-/// Uses AppKit directly because the panel must float above everything, appear on every Space
-/// including full-screen apps, and open without any view being on screen to trigger it.
+/// Uses AppKit directly because the overlay must cover the screen, float above everything,
+/// appear on every Space including full-screen apps, and open without any view on screen
+/// to trigger it.
 @MainActor
 final class SleepPromptPresenter {
     static let windowTitle = "Sleep Countdown"
@@ -14,7 +16,6 @@ final class SleepPromptPresenter {
     private let scheduler: SleepScheduler
     private let preferences: Preferences
     private var window: PromptWindow?
-    private var hostingView: NSHostingView<AnyView>?
 
     var isShowingWindow: Bool {
         window?.isVisible ?? false
@@ -48,13 +49,13 @@ final class SleepPromptPresenter {
 
     private func show() {
         let window = self.window ?? makeWindow()
-        guard !window.isVisible, let hostingView else { return }
-        // Size the window from the content once, here, rather than letting Auto Layout
-        // negotiate between the hosting view and the window on every update. Letting it
-        // negotiate produced an unbounded update-constraints loop and a crash.
-        hostingView.layoutSubtreeIfNeeded()
-        window.setContentSize(hostingView.fittingSize)
-        window.center()
+        guard !window.isVisible else { return }
+        // Cover the screen the user is working on. The window is sized here, explicitly,
+        // rather than by Auto Layout negotiating with the hosting view, which looped.
+        let screen = NSScreen.screens.first { $0.frame.contains(NSEvent.mouseLocation) } ?? NSScreen.main
+        if let screen {
+            window.setFrame(screen.frame, display: false)
+        }
         NSApp.activate()
         window.makeKeyAndOrderFront(nil)
         Log.app.info("Sleep prompt shown")
@@ -67,17 +68,15 @@ final class SleepPromptPresenter {
     }
 
     private func makeWindow() -> PromptWindow {
-        let content = AnyView(
-            SleepPromptView()
-                .environment(scheduler)
-                .environment(preferences)
-        )
+        let content = SleepPromptView()
+            .environment(scheduler)
+            .environment(preferences)
         let hostingView = NSHostingView(rootView: content)
-        hostingView.sizingOptions = [.intrinsicContentSize]
-        self.hostingView = hostingView
+        // The overlay fills whatever frame the window is given; it has no size of its own.
+        hostingView.sizingOptions = []
 
         let window = PromptWindow(
-            contentRect: NSRect(origin: .zero, size: hostingView.fittingSize),
+            contentRect: NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1280, height: 800),
             styleMask: [.borderless],
             backing: .buffered,
             defer: false
@@ -86,8 +85,7 @@ final class SleepPromptPresenter {
         window.contentView = hostingView
         window.isOpaque = false
         window.backgroundColor = .clear
-        window.hasShadow = true
-        window.isMovableByWindowBackground = true
+        window.hasShadow = false
         window.isReleasedWhenClosed = false
         window.level = .floating
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
@@ -97,7 +95,7 @@ final class SleepPromptPresenter {
     }
 }
 
-/// A borderless window that still takes keyboard focus, so Return and Escape reach the buttons.
+/// A borderless window that still takes keyboard focus, so Return reaches the buttons.
 private final class PromptWindow: NSWindow {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }

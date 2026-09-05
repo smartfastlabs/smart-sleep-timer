@@ -37,8 +37,8 @@ final class SleepScheduler {
     static let imminentThreshold: TimeInterval = 30 * 60
     /// How long the countdown panel gives the user before sleeping.
     static let promptDuration: TimeInterval = 10
-    static let quickPickMinutes = [1, 5, 15, 30, 60, 120]
-    static let snoozeMinutes = [5, 10, 30]
+    static let quickPickMinutes = [15, 30, 60, 120]
+    static let snoozeMinutes = [15, 30, 60]
 
     /// The scheduler's view of the current time, refreshed every tick.
     private(set) var now: Date
