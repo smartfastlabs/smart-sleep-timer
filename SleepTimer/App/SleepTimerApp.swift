@@ -4,10 +4,12 @@ import SwiftUI
 struct SleepTimerApp: App {
     @State private var preferences: Preferences
     @State private var scheduler: SleepScheduler
+    private let promptPresenter: SleepPromptPresenter
 
     init() {
         let preferences = Preferences()
         let scheduler = SleepScheduler(preferences: preferences)
+        promptPresenter = SleepPromptPresenter(scheduler: scheduler, preferences: preferences)
         scheduler.start()
         _preferences = State(initialValue: preferences)
         _scheduler = State(initialValue: scheduler)

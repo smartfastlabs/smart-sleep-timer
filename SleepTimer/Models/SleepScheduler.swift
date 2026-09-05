@@ -3,7 +3,21 @@ import Foundation
 import Observation
 import os
 
-/// Decides when the Mac should sleep, from either a manual countdown or the daily bedtime.
+/// A pending sleep the user can still interrupt. Shown as the countdown panel.
+struct SleepPrompt: Equatable {
+    enum Reason: Equatable {
+        case timer
+        case bedtime
+        case lightsOut
+    }
+
+    let reason: Reason
+    /// When the Mac sleeps if nobody intervenes.
+    let deadline: Date
+}
+
+/// Decides when the Mac should sleep, from a manual countdown, the nightly bedtime, or
+/// Lights Out mode inside the bedtime window.
 ///
 /// The scheduler ticks once per second while running. All state is main-actor isolated.
 /// Dependencies are injectable so the logic can be tested with a fake clock.
@@ -13,25 +27,31 @@ final class SleepScheduler {
     /// How urgently the UI should present the scheduler's state.
     enum Status: Equatable {
         case normal
-        /// Bedtime has passed today and no countdown is running.
+        /// Inside the bedtime window with no manual countdown running.
         case pastBedtime
         /// The Mac will sleep within `imminentThreshold`.
         case imminent
     }
 
-    /// Sleep is skipped if the user provided input within this window.
-    static let activityGracePeriod: TimeInterval = 2 * 60
     /// Status becomes `.imminent` this close to the next sleep.
     static let imminentThreshold: TimeInterval = 30 * 60
-    static let quickPickMinutes = [0, 5, 15, 30, 60, 120]
+    /// How long the countdown panel gives the user before sleeping.
+    static let promptDuration: TimeInterval = 10
+    static let quickPickMinutes = [1, 5, 15, 30, 60, 120]
 
     /// The scheduler's view of the current time, refreshed every tick.
     private(set) var now: Date
     /// When the manual countdown ends, if one is running.
     private(set) var timerEnd: Date?
+    /// The quick pick that started the current countdown, for highlighting.
+    private(set) var activeQuickPick: Int?
+    /// When the Lights Out countdown ends, if one is armed.
+    private(set) var lightsOutEnd: Date?
+    /// The countdown panel state, if the user is being asked before sleep.
+    private(set) var pendingSleep: SleepPrompt?
 
-    /// The specific bedtime instant that has already fired, so it fires once.
-    @ObservationIgnored private var handledBedtime: Date?
+    /// Start of the bedtime window that has already fired, so bedtime fires once per night.
+    @ObservationIgnored private var handledBedtimeStart: Date?
     @ObservationIgnored private var lastWake: Date?
     @ObservationIgnored private var ticker: Timer?
     @ObservationIgnored private var wakeObserver: (any NSObjectProtocol)?
@@ -56,10 +76,8 @@ final class SleepScheduler {
         self.activity = activity
         self.now = clock()
 
-        // Launching after bedtime should not put the Mac straight to sleep.
-        if let bedtime = todaysBedtime, now >= bedtime {
-            handledBedtime = bedtime
-        }
+        // Launching inside the bedtime window should not put the Mac straight to sleep.
+        handledBedtimeStart = currentBedtimeWindow?.start
     }
 
     // MARK: - Lifecycle
@@ -87,24 +105,62 @@ final class SleepScheduler {
         wakeObserver = nil
     }
 
-    // MARK: - Derived state
+    // MARK: - Bedtime window
 
-    /// Today's bedtime, or nil when bedtime is disabled.
-    var todaysBedtime: Date? {
+    /// The bedtime window containing `now`, if bedtime is enabled and we are inside one.
+    /// Windows may cross midnight, so yesterday's window is checked as well as today's.
+    var currentBedtimeWindow: DateInterval? {
         guard preferences.bedtimeEnabled else { return nil }
-        return preferences.bedtime.date(on: now, calendar: calendar)
+        for dayOffset in [0, -1] {
+            guard let day = calendar.date(byAdding: .day, value: dayOffset, to: now),
+                  let window = bedtimeWindow(startingOn: day) else { continue }
+            // Half-open: the window ends exactly at wake time.
+            if window.start <= now, now < window.end { return window }
+        }
+        return nil
+    }
+
+    /// The next bedtime at or after `now`, if bedtime is enabled.
+    var nextBedtime: Date? {
+        guard preferences.bedtimeEnabled else { return nil }
+        for dayOffset in [0, 1] {
+            guard let day = calendar.date(byAdding: .day, value: dayOffset, to: now),
+                  let start = preferences.bedtime.date(on: day, calendar: calendar) else { continue }
+            if start >= now { return start }
+        }
+        return nil
+    }
+
+    private func bedtimeWindow(startingOn day: Date) -> DateInterval? {
+        guard let start = preferences.bedtime.date(on: day, calendar: calendar),
+              var end = preferences.wakeTime.date(on: start, calendar: calendar) else { return nil }
+        if end <= start {
+            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: end) else { return nil }
+            end = nextDay
+        }
+        return DateInterval(start: start, end: end)
     }
 
     var isPastBedtime: Bool {
-        guard let bedtime = todaysBedtime else { return false }
-        return now >= bedtime
+        currentBedtimeWindow != nil
     }
+
+    /// Whether Lights Out mode is active right now.
+    var isLightsOut: Bool {
+        preferences.lightsOutEnabled && isPastBedtime
+    }
+
+    // MARK: - Derived state
 
     /// The next moment the Mac is expected to sleep, if anything is scheduled.
     var nextSleepTime: Date? {
+        if let deadline = pendingSleep?.deadline { return deadline }
         if let timerEnd { return timerEnd }
-        if let bedtime = todaysBedtime, bedtime != handledBedtime { return bedtime }
-        return nil
+        if let lightsOutEnd { return lightsOutEnd }
+        if let window = currentBedtimeWindow {
+            return window.start == handledBedtimeStart ? nil : window.start
+        }
+        return nextBedtime
     }
 
     func willSleep(within interval: TimeInterval) -> Bool {
@@ -113,8 +169,8 @@ final class SleepScheduler {
     }
 
     var status: Status {
-        if willSleep(within: Self.imminentThreshold) { return .imminent }
         if isPastBedtime && timerEnd == nil { return .pastBedtime }
+        if willSleep(within: Self.imminentThreshold) { return .imminent }
         return .normal
     }
 
@@ -127,23 +183,56 @@ final class SleepScheduler {
         return idle
     }
 
-    // MARK: - Actions
+    // MARK: - Timer actions
 
-    /// Starts a countdown and remembers the choice. Zero minutes cancels.
+    /// Starts a countdown from a quick pick. Zero minutes cancels.
     func startTimer(minutes: Int) {
-        preferences.sleepIntervalMinutes = minutes
+        pendingSleep = nil
+        activeQuickPick = minutes > 0 ? minutes : nil
         timerEnd = minutes > 0 ? now.addingTimeInterval(TimeInterval(minutes * 60)) : nil
         Log.scheduler.info("Timer set to \(minutes) minutes")
     }
 
-    /// Restarts the countdown from now without changing the remembered quick pick.
-    func extendTimer(minutes: Int) {
-        timerEnd = now.addingTimeInterval(TimeInterval(minutes * 60))
-        Log.scheduler.info("Timer extended by \(minutes) minutes")
+    func cancelTimer() {
+        startTimer(minutes: 0)
     }
 
+    // MARK: - Prompt actions
+
+    /// Sleeps immediately, skipping the rest of the countdown.
+    func sleepNow() {
+        pendingSleep = nil
+        performSleep()
+    }
+
+    /// Dismisses the countdown and comes back after the snooze interval.
+    func snooze() {
+        guard pendingSleep != nil else { return }
+        pendingSleep = nil
+        activeQuickPick = nil
+        timerEnd = now.addingTimeInterval(TimeInterval(preferences.snoozeMinutes * 60))
+        Log.scheduler.info("Snoozed for \(self.preferences.snoozeMinutes) minutes")
+    }
+
+    /// Dismisses the countdown without sleeping. Inside Lights Out, the countdown re-arms.
+    func dismissPrompt() {
+        pendingSleep = nil
+        Log.scheduler.info("Sleep prompt dismissed")
+    }
+
+    // MARK: - System events
+
     func noteWake() {
-        lastWake = clock()
+        let wakeTime = clock()
+        lastWake = wakeTime
+        now = wakeTime
+        // Anything that came due while asleep has served its purpose.
+        pendingSleep = nil
+        lightsOutEnd = nil
+        if let timerEnd, timerEnd <= now {
+            self.timerEnd = nil
+            activeQuickPick = nil
+        }
         Log.scheduler.info("System woke")
     }
 
@@ -151,23 +240,64 @@ final class SleepScheduler {
     func tick() {
         now = clock()
 
-        if let bedtime = todaysBedtime, timerEnd == nil, bedtime != handledBedtime, now >= bedtime {
-            handledBedtime = bedtime
-            Log.scheduler.info("Bedtime reached")
-            sleepIfIdle()
-        } else if let timerEnd, now >= timerEnd {
+        if let prompt = pendingSleep {
+            if now >= prompt.deadline {
+                pendingSleep = nil
+                performSleep()
+            }
+            return
+        }
+
+        if let timerEnd, now >= timerEnd {
             self.timerEnd = nil
+            activeQuickPick = nil
             Log.scheduler.info("Timer elapsed")
-            sleepIfIdle()
+            sleepDue(.timer)
+            return
+        }
+
+        guard let window = currentBedtimeWindow else {
+            lightsOutEnd = nil
+            return
+        }
+
+        if timerEnd == nil, window.start != handledBedtimeStart {
+            handledBedtimeStart = window.start
+            lightsOutEnd = nil
+            Log.scheduler.info("Bedtime reached")
+            sleepDue(.bedtime)
+            return
+        }
+
+        guard preferences.lightsOutEnabled, timerEnd == nil else {
+            lightsOutEnd = nil
+            return
+        }
+
+        if let lightsOutEnd {
+            if now >= lightsOutEnd {
+                self.lightsOutEnd = nil
+                Log.scheduler.info("Lights Out countdown elapsed")
+                sleepDue(.lightsOut)
+            }
+        } else {
+            lightsOutEnd = now.addingTimeInterval(TimeInterval(preferences.lightsOutMinutes * 60))
+            Log.scheduler.info("Lights Out armed for \(self.preferences.lightsOutMinutes) minutes")
         }
     }
 
-    private func sleepIfIdle() {
+    /// Sleeps at once if the user is idle; otherwise shows the countdown.
+    private func sleepDue(_ reason: SleepPrompt.Reason) {
         let idle = secondsSinceLastActivity
-        guard idle >= Self.activityGracePeriod else {
-            Log.scheduler.notice("Skipping sleep: user was active \(Int(idle)) seconds ago")
-            return
+        if idle >= TimeInterval(preferences.idleThresholdSeconds) {
+            performSleep()
+        } else {
+            Log.scheduler.notice("User active \(Int(idle)) seconds ago; showing countdown")
+            pendingSleep = SleepPrompt(reason: reason, deadline: now.addingTimeInterval(Self.promptDuration))
         }
+    }
+
+    private func performSleep() {
         sleeper.sleep()
     }
 }

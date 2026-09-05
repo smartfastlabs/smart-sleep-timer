@@ -16,11 +16,6 @@ struct SnapshotTests {
         return FileManager.default.temporaryDirectory.appending(path: "SleepTimerSnapshots")
     }
 
-    private func makeModels() -> (Preferences, SleepScheduler) {
-        let preferences = Preferences(defaults: UserDefaults(suiteName: "SnapshotTests.\(UUID().uuidString)")!)
-        return (preferences, SleepScheduler(preferences: preferences))
-    }
-
     private func snapshot(_ view: some View, name: String) throws {
         guard let directory = Self.outputDirectory else { return }
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -45,33 +40,51 @@ struct SnapshotTests {
         }
     }
 
+    private func popover(_ harness: SchedulerHarness) -> some View {
+        MenuBarContentView(preferences: harness.preferences, scheduler: harness.scheduler)
+    }
+
     @Test func popoverIdle() throws {
-        let (preferences, scheduler) = makeModels()
-        try snapshot(MenuBarContentView(preferences: preferences, scheduler: scheduler), name: "popover-idle")
+        try snapshot(popover(SchedulerHarness()), name: "popover-idle")
     }
 
     @Test func popoverRunning() throws {
-        let (preferences, scheduler) = makeModels()
-        preferences.bedtimeEnabled = true
-        scheduler.startTimer(minutes: 15)
-        try snapshot(MenuBarContentView(preferences: preferences, scheduler: scheduler), name: "popover-running")
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.scheduler.startTimer(minutes: 15)
+        try snapshot(popover(harness), name: "popover-running")
     }
 
     @Test func popoverBedtimeScheduled() throws {
-        let (preferences, scheduler) = makeModels()
-        preferences.bedtimeEnabled = true
-        preferences.bedtime = TimeOfDay(hour: 23, minute: 59)
-        try snapshot(MenuBarContentView(preferences: preferences, scheduler: scheduler), name: "popover-bedtime")
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 23, minute: 59))
+        try snapshot(popover(harness), name: "popover-bedtime")
+    }
+
+    @Test func popoverLightsOut() throws {
+        let harness = SchedulerHarness(now: SchedulerHarness.evening.addingTimeInterval(2 * 3600), bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.preferences.lightsOutEnabled = true
+        harness.advance(seconds: 1)
+        try snapshot(popover(harness), name: "popover-lightsout")
+    }
+
+    @Test func sleepPrompt() throws {
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.idleSeconds = 5
+        harness.advance(minutes: 61)
+        harness.advance(seconds: 3)
+        try snapshot(
+            SleepPromptView().environment(harness.preferences).environment(harness.scheduler),
+            name: "prompt"
+        )
     }
 
     @Test func settings() throws {
-        let (preferences, _) = makeModels()
-        preferences.bedtimeEnabled = true
-        try snapshot(SettingsView().environment(preferences), name: "settings")
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.preferences.lightsOutEnabled = true
+        try snapshot(SettingsView().environment(harness.preferences), name: "settings")
     }
 
     @Test func welcome() throws {
-        let (preferences, _) = makeModels()
-        try snapshot(WelcomeView().environment(preferences), name: "welcome")
+        let harness = SchedulerHarness()
+        try snapshot(WelcomeView().environment(harness.preferences), name: "welcome")
     }
 }

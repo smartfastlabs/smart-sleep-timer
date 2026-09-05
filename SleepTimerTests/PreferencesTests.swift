@@ -8,10 +8,15 @@ struct PreferencesTests {
         UserDefaults(suiteName: "PreferencesTests.\(UUID().uuidString)")!
     }
 
-    @Test func defaultsToTenPMBedtime() {
+    @Test func defaults() {
         let preferences = Preferences(defaults: makeDefaults())
         #expect(preferences.bedtime == TimeOfDay(hour: 22, minute: 0))
+        #expect(preferences.wakeTime == TimeOfDay(hour: 6, minute: 0))
         #expect(!preferences.bedtimeEnabled)
+        #expect(!preferences.lightsOutEnabled)
+        #expect(preferences.lightsOutMinutes == 15)
+        #expect(preferences.idleThresholdSeconds == 120)
+        #expect(preferences.snoozeMinutes == 10)
         #expect(!preferences.hasCompletedWelcome)
     }
 
@@ -20,13 +25,21 @@ struct PreferencesTests {
         let first = Preferences(defaults: defaults)
         first.bedtimeEnabled = true
         first.bedtime = TimeOfDay(hour: 0, minute: 15)
-        first.sleepIntervalMinutes = 30
+        first.wakeTime = TimeOfDay(hour: 7, minute: 30)
+        first.lightsOutEnabled = true
+        first.lightsOutMinutes = 20
+        first.idleThresholdSeconds = 60
+        first.snoozeMinutes = 5
         first.hasCompletedWelcome = true
 
         let second = Preferences(defaults: defaults)
         #expect(second.bedtimeEnabled)
         #expect(second.bedtime == TimeOfDay(hour: 0, minute: 15))
-        #expect(second.sleepIntervalMinutes == 30)
+        #expect(second.wakeTime == TimeOfDay(hour: 7, minute: 30))
+        #expect(second.lightsOutEnabled)
+        #expect(second.lightsOutMinutes == 20)
+        #expect(second.idleThresholdSeconds == 60)
+        #expect(second.snoozeMinutes == 5)
         #expect(second.hasCompletedWelcome)
     }
 

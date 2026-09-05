@@ -10,7 +10,9 @@ macOS menu bar app (SwiftUI, sandboxed, Mac App Store) that puts the Mac to slee
 
 ## Architecture
 - `Preferences` (`@Observable`) persists settings to UserDefaults; key names are frozen for backward compatibility.
-- `SleepScheduler` (`@Observable`, main actor) owns the countdown and bedtime logic. Its clock, sleeper, and activity monitor are injected so tests drive it with `tick()`.
+- `SleepScheduler` (`@Observable`, main actor) owns the countdown, bedtime window, Lights Out, and sleep prompt logic. Its clock, sleeper, and activity monitor are injected so tests drive it with `tick()` via `SchedulerHarness` in the test target.
+- Bedtime is a half-open window from bedtime to wake time that may cross midnight. Bedtime fires once per window; Lights Out re-arms a countdown inside the window whenever no manual timer is running.
+- When a sleep comes due, the scheduler sleeps immediately if the user has been idle past the threshold; otherwise it sets `pendingSleep` and `SleepPromptPresenter` shows the floating countdown window via `withObservationTracking`.
 - `SystemActivityMonitor` reads idle time from `CGEventSource`; `PMSetSleeper` runs `pmset sleepnow`; `LoginItem` wraps `SMAppService`.
 - Views get models via `.environment(...)`. Apply it inside the `MenuBarExtra` content closure, not on the scene: scene-level environment reaches neither the content nor the label. `MenuBarIcon` takes the scheduler as a plain property for the same reason.
 

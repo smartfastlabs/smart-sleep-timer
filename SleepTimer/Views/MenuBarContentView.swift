@@ -57,8 +57,14 @@ private struct BedtimeRow: View {
 
     private var bedtimeDescription: String {
         guard preferences.bedtimeEnabled else { return "Off" }
-        let time = preferences.bedtime.date(on: scheduler.now).map(Formatting.wallClock) ?? ""
-        return scheduler.isPastBedtime ? "Passed at \(time)" : "Tonight at \(time)"
+        if let window = scheduler.currentBedtimeWindow {
+            let end = Formatting.wallClock(window.end)
+            return scheduler.isLightsOut ? "Lights Out until \(end)" : "Until \(end)"
+        }
+        if let next = scheduler.nextBedtime {
+            return "Tonight at \(Formatting.wallClock(next))"
+        }
+        return "On"
     }
 }
 

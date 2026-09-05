@@ -7,11 +7,6 @@ import Testing
 /// without one present traps at body evaluation, so these tests catch missing wiring.
 @MainActor
 struct ViewRenderingTests {
-    private func makeModels() -> (Preferences, SleepScheduler) {
-        let preferences = Preferences(defaults: UserDefaults(suiteName: "ViewRenderingTests.\(UUID().uuidString)")!)
-        return (preferences, SleepScheduler(preferences: preferences))
-    }
-
     private func render(_ view: some View) {
         let host = NSHostingView(rootView: view)
         host.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
@@ -20,24 +15,28 @@ struct ViewRenderingTests {
     }
 
     @Test func menuBarContentRenders() {
-        let (preferences, scheduler) = makeModels()
-        preferences.bedtimeEnabled = true
-        scheduler.startTimer(minutes: 15)
-        render(MenuBarContentView(preferences: preferences, scheduler: scheduler))
+        let harness = SchedulerHarness(bedtime: TimeOfDay(hour: 22, minute: 0))
+        harness.scheduler.startTimer(minutes: 15)
+        render(MenuBarContentView(preferences: harness.preferences, scheduler: harness.scheduler))
     }
 
     @Test func menuBarIconRenders() {
-        let (_, scheduler) = makeModels()
-        render(MenuBarIcon(scheduler: scheduler))
+        render(MenuBarIcon(scheduler: SchedulerHarness().scheduler))
+    }
+
+    @Test func sleepPromptRenders() {
+        let harness = SchedulerHarness()
+        harness.idleSeconds = 1
+        harness.scheduler.startTimer(minutes: 1)
+        harness.advance(seconds: 61)
+        render(SleepPromptView().environment(harness.preferences).environment(harness.scheduler))
     }
 
     @Test func settingsViewRenders() {
-        let (preferences, _) = makeModels()
-        render(SettingsView().environment(preferences))
+        render(SettingsView().environment(SchedulerHarness().preferences))
     }
 
     @Test func welcomeViewRenders() {
-        let (preferences, _) = makeModels()
-        render(WelcomeView().environment(preferences))
+        render(WelcomeView().environment(SchedulerHarness().preferences))
     }
 }

@@ -14,12 +14,43 @@ struct SettingsView: View {
         Form {
             Section {
                 Toggle("Sleep at bedtime", isOn: $preferences.bedtimeEnabled)
-                DatePicker("Bedtime", selection: bedtimeBinding, displayedComponents: .hourAndMinute)
-                    .disabled(!preferences.bedtimeEnabled)
+                DatePicker("Bedtime", selection: binding(for: \.bedtime), displayedComponents: .hourAndMinute)
+                DatePicker("Wake time", selection: binding(for: \.wakeTime), displayedComponents: .hourAndMinute)
             } header: {
                 Text("Bedtime")
             } footer: {
-                Text("Your Mac goes to sleep at bedtime unless you are actively using it.")
+                Text("At bedtime your Mac goes to sleep, or shows a countdown if you're using it. Bedtime lasts until wake time.")
+            }
+            .disabled(!preferences.bedtimeEnabled)
+
+            Section {
+                Toggle("Lights Out mode", isOn: $preferences.lightsOutEnabled)
+                Picker("Sleep again after", selection: $preferences.lightsOutMinutes) {
+                    ForEach(Preferences.lightsOutMinuteOptions, id: \.self) { minutes in
+                        Text("\(minutes) minutes").tag(minutes)
+                    }
+                }
+                .disabled(!preferences.lightsOutEnabled)
+            } footer: {
+                Text("Between bedtime and wake time, your Mac goes back to sleep this long after you wake it.")
+            }
+            .disabled(!preferences.bedtimeEnabled)
+
+            Section {
+                Picker("Wait for inactivity", selection: $preferences.idleThresholdSeconds) {
+                    ForEach(Preferences.idleThresholdOptions, id: \.self) { seconds in
+                        Text(Self.describe(seconds: seconds)).tag(seconds)
+                    }
+                }
+                Picker("Snooze", selection: $preferences.snoozeMinutes) {
+                    ForEach(Preferences.snoozeMinuteOptions, id: \.self) { minutes in
+                        Text("\(minutes) minutes").tag(minutes)
+                    }
+                }
+            } header: {
+                Text("Going to sleep")
+            } footer: {
+                Text("If you've used your Mac within this time when a timer ends, you get a \(Int(SleepScheduler.promptDuration))-second countdown instead of sleeping right away.")
             }
 
             Section("General") {
@@ -35,15 +66,19 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 380)
+        .frame(width: 420)
         .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var bedtimeBinding: Binding<Date> {
+    private func binding(for keyPath: ReferenceWritableKeyPath<Preferences, TimeOfDay>) -> Binding<Date> {
         Binding(
-            get: { preferences.bedtime.date(on: .now) ?? .now },
-            set: { preferences.bedtime = TimeOfDay(from: $0) }
+            get: { preferences[keyPath: keyPath].date(on: .now) ?? .now },
+            set: { preferences[keyPath: keyPath] = TimeOfDay(from: $0) }
         )
+    }
+
+    private static func describe(seconds: Int) -> String {
+        seconds < 60 ? "\(seconds) seconds" : (seconds == 60 ? "1 minute" : "\(seconds / 60) minutes")
     }
 
     private static var versionString: String {

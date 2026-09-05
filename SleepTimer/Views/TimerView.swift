@@ -14,7 +14,6 @@ struct TimerView: View {
 
     // MARK: - Header
 
-    @ViewBuilder
     private var header: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: headerSymbol)
@@ -36,7 +35,7 @@ struct TimerView: View {
 
             if scheduler.timerEnd != nil {
                 Button("Cancel") {
-                    scheduler.startTimer(minutes: 0)
+                    scheduler.cancelTimer()
                 }
                 .controlSize(.small)
             }
@@ -45,11 +44,9 @@ struct TimerView: View {
 
     private var headerSymbol: String {
         if scheduler.timerEnd != nil { return "moon.zzz.fill" }
-        switch scheduler.status {
-        case .imminent: return "bed.double.fill"
-        case .pastBedtime: return "bed.double.fill"
-        case .normal: return scheduler.nextSleepTime == nil ? "moon.zzz" : "bed.double"
-        }
+        if scheduler.lightsOutEnd != nil { return "lightbulb.slash.fill" }
+        if scheduler.isPastBedtime { return "bed.double.fill" }
+        return scheduler.nextSleepTime == nil ? "moon.zzz" : "bed.double"
     }
 
     private var headerTint: some ShapeStyle {
@@ -61,33 +58,44 @@ struct TimerView: View {
     }
 
     private var headerTitle: String {
-        if let end = scheduler.timerEnd {
+        if let end = scheduler.timerEnd ?? scheduler.lightsOutEnd {
             return Formatting.countdown(from: scheduler.now, to: end)
+        }
+        if scheduler.isPastBedtime {
+            return scheduler.isLightsOut ? "Lights Out" : "Past bedtime"
         }
         if let bedtime = scheduler.nextSleepTime {
             return Formatting.wallClock(bedtime)
         }
-        return scheduler.isPastBedtime ? "Past bedtime" : "Timer off"
+        return "Timer off"
     }
 
     private var headerSubtitle: String {
         if let end = scheduler.timerEnd {
             return "Sleeps at \(Formatting.wallClock(end))"
         }
+        if let end = scheduler.lightsOutEnd {
+            return "Lights Out · sleeps at \(Formatting.wallClock(end))"
+        }
+        if let window = scheduler.currentBedtimeWindow {
+            return scheduler.isLightsOut
+                ? "Until \(Formatting.wallClock(window.end))"
+                : "Start a timer to sleep soon"
+        }
         if scheduler.nextSleepTime != nil {
             return "Bedtime"
         }
-        return scheduler.isPastBedtime ? "Start a timer to sleep soon" : "Choose how long to stay awake"
+        return "Choose how long to stay awake"
     }
 
     // MARK: - Quick picks
 
     private var quickPicks: some View {
         HStack(spacing: 6) {
-            ForEach(SleepScheduler.quickPickMinutes.filter { $0 > 0 }, id: \.self) { minutes in
+            ForEach(SleepScheduler.quickPickMinutes, id: \.self) { minutes in
                 QuickPickButton(
                     title: Formatting.quickPick(minutes: minutes),
-                    isActive: scheduler.timerEnd != nil && minutes == preferences.sleepIntervalMinutes
+                    isActive: minutes == scheduler.activeQuickPick
                 ) {
                     scheduler.startTimer(minutes: minutes)
                 }
