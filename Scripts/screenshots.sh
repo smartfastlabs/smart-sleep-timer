@@ -1,6 +1,7 @@
 #!/bin/zsh
 # Regenerates docs/screenshots/ from the app's real views via ReadmeScreenshots tests.
 set -euo pipefail
+setopt null_glob
 cd "$(dirname "$0")/.."
 
 OUT="$(getconf DARWIN_USER_TEMP_DIR)SleepTimerSnapshots/readme"

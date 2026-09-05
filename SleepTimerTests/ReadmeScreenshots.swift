@@ -20,23 +20,8 @@ struct ReadmeScreenshots {
         SchedulerHarness(now: Self.nineTonight, bedtime: TimeOfDay(hour: 22, minute: 0), calendar: .current)
     }
 
-    /// Renders `view` at its fitting size, or at `size` when given, in one appearance.
-    private func write(_ view: some View, name: String, appearance: NSAppearance.Name, size: CGSize? = nil, scale: CGFloat = 2) throws {
-        try FileManager.default.createDirectory(at: Self.outputDirectory, withIntermediateDirectories: true)
-        let host = NSHostingView(rootView: AnyView(view))
-        host.appearance = NSAppearance(named: appearance)
-        let frameSize = size ?? host.fittingSize
-        let window = NSWindow(contentRect: NSRect(origin: .zero, size: frameSize), styleMask: .borderless, backing: .buffered, defer: false)
-        window.contentView = host
-        host.frame = NSRect(origin: .zero, size: frameSize)
-        host.layoutSubtreeIfNeeded()
-        host.displayIfNeeded()
-
-        let bitmap = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
-        bitmap.size = host.bounds.size
-        host.cacheDisplay(in: host.bounds, to: bitmap)
-        let data = try #require(bitmap.representation(using: .png, properties: [:]))
-        try data.write(to: Self.outputDirectory.appending(path: "\(name).png"))
+    private func write(_ view: some View, name: String, appearance: NSAppearance.Name, size: CGSize? = nil) throws {
+        try ScreenshotRenderer.write(view, to: Self.outputDirectory.appending(path: "\(name).png"), appearance: appearance, size: size)
     }
 
     private func writeBoth(_ view: some View, name: String, size: CGSize? = nil) throws {
@@ -179,7 +164,7 @@ private struct ReadmeMenuBarStates: View {
 }
 
 /// A mock desktop with a few windows so the overlay's blur shows.
-private struct ReadmeDesktop<Content: View>: View {
+struct ReadmeDesktop<Content: View>: View {
     var blurred = false
     @ViewBuilder let content: Content
 

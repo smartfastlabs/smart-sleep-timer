@@ -17,6 +17,8 @@ macOS menu bar app (SwiftUI, sandboxed, Mac App Store) that puts the Mac to slee
 - This is a menu bar app with no Dock presence, so whenever our last window closes we hand activation back (`NSApplication.returnFocus`), or the user's keystrokes land nowhere.
 - `SnapshotTests` render every view to PNG under the temp directory on each run. They are review artifacts, not assertions; look at them after UI changes.
 - README images come from `ReadmeScreenshots` (same mechanism, local time zone, fixed 9 PM). Run `Scripts/screenshots.sh` after any UI change so `docs/screenshots/` matches the app.
+- App Store screenshots (2880×1800) come from `AppStoreScreenshots` via `Scripts/appstore-screenshots.sh` into `docs/appstore/screenshots/`, which is git-ignored because it's 19 MB. Listing copy and the release checklist live in `docs/appstore/`.
+- Releasing: bump `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in the project file, then follow `docs/appstore/CHECKLIST.md`. Archive and upload happen in Xcode with Todd's Apple ID; no signing identity exists on the command line.
 - `SystemActivityMonitor` reads idle time from `CGEventSource`; `PMSetSleeper` runs `pmset sleepnow`; `LoginItem` wraps `SMAppService`.
 - Views get models via `.environment(...)`. Apply it inside the `MenuBarExtra` content closure, not on the scene: scene-level environment reaches neither the content nor the label. `MenuBarIcon` takes the scheduler as a plain property for the same reason.
 
