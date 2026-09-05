@@ -16,6 +16,7 @@ macOS menu bar app (SwiftUI, sandboxed, Mac App Store) that puts the Mac to slee
 - When a sleep comes due, the scheduler sleeps immediately if the user has been idle past the threshold; otherwise it sets `pendingSleep` and `SleepPromptPresenter` shows the full-screen overlay via `withObservationTracking`. The overlay window is sized explicitly, never by Auto Layout, after a constraint loop crash.
 - This is a menu bar app with no Dock presence, so whenever our last window closes we hand activation back (`NSApplication.returnFocus`), or the user's keystrokes land nowhere.
 - `SnapshotTests` render every view to PNG under the temp directory on each run. They are review artifacts, not assertions; look at them after UI changes.
+- README images come from `ReadmeScreenshots` (same mechanism, local time zone, fixed 9 PM). Run `Scripts/screenshots.sh` after any UI change so `docs/screenshots/` matches the app.
 - `SystemActivityMonitor` reads idle time from `CGEventSource`; `PMSetSleeper` runs `pmset sleepnow`; `LoginItem` wraps `SMAppService`.
 - Views get models via `.environment(...)`. Apply it inside the `MenuBarExtra` content closure, not on the scene: scene-level environment reaches neither the content nor the label. `MenuBarIcon` takes the scheduler as a plain property for the same reason.
 

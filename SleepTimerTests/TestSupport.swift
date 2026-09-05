@@ -17,11 +17,18 @@ final class SchedulerHarness {
     var idleSeconds: TimeInterval = 600
     private(set) var sleepRequests = 0
 
+    let calendar: Calendar
     let preferences: Preferences
     private(set) var scheduler: SleepScheduler!
 
-    init(now: Date = SchedulerHarness.evening, bedtime: TimeOfDay? = nil, wakeTime: TimeOfDay? = nil) {
+    init(
+        now: Date = SchedulerHarness.evening,
+        bedtime: TimeOfDay? = nil,
+        wakeTime: TimeOfDay? = nil,
+        calendar: Calendar = SchedulerHarness.calendar
+    ) {
         self.now = now
+        self.calendar = calendar
         let defaults = UserDefaults(suiteName: "SchedulerHarness.\(UUID().uuidString)")!
         preferences = Preferences(defaults: defaults)
         if let bedtime {
@@ -33,7 +40,7 @@ final class SchedulerHarness {
         }
         scheduler = SleepScheduler(
             preferences: preferences,
-            calendar: Self.calendar,
+            calendar: calendar,
             clock: { [unowned self] in self.now },
             sleeper: Sleeper(harness: self),
             activity: Activity(harness: self)
@@ -52,7 +59,7 @@ final class SchedulerHarness {
 
     /// The given clock time on the same day as `now`.
     func date(hour: Int, minute: Int = 0, second: Int = 0) -> Date {
-        Self.calendar.date(bySettingHour: hour, minute: minute, second: second, of: now)!
+        calendar.date(bySettingHour: hour, minute: minute, second: second, of: now)!
     }
 
     private struct Sleeper: SystemSleeping {
